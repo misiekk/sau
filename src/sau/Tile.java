@@ -36,5 +36,7 @@ public class Tile {
     }
     public void setX(int _x) {this.x = _x; }
     public void setY(int _y) {this.y = _y; }
+    public void setIndX(int _indX) {this.indX = _indX; }
+    public void setIndY(int _indY) {this.indY = _indY; }
     public void setStatus(int _status) {this.status = _status; }
 }

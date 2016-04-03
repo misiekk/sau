@@ -10,7 +10,7 @@ public class Map extends JPanel{
     static final public int xTilesCount = 40;
     static final public int yTilesCount = 30;
     static final public int tileSize = 20;  // tile = tileSize x tileSize px
-    static final private int timerDelay = 100;  // timer delay to set in ms
+    static final private int timerDelay = 1000;  // timer delay to set in ms
 
     //private Timer timer;        // for updating GUI
     private ArrayList<Tile> tileList;
@@ -22,19 +22,24 @@ public class Map extends JPanel{
         tileList = new ArrayList<Tile>();
         tileArray = new Tile[xTilesCount][yTilesCount];
         initTileList();
-        kayak = new Kayak(5*tileSize, 5*tileSize);  //TODO kayak initial position
+        kayak = new Kayak(5, 5, this);  //TODO kayak initial position
         Timer timer = new Timer(timerDelay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                //kayak.moveRight();
+                kayak.moveRight();
                 repaint();
+                showInfo(Tile.statusKayak);
             }
         });
         timer.start();
 
-        showMap();
+        //showMap();
+
     }
 
+    public Tile[][] getTileArray(){
+        return this.tileArray;
+    };
     private void paintKayak(Graphics g){
         //Graphics g = this.getGraphics();
         g.setColor(Color.YELLOW);
@@ -68,6 +73,21 @@ public class Map extends JPanel{
     private void showMap(){
         for(int i=0; i<xTilesCount; ++i) {
             for (int j = 0; j < yTilesCount; ++j) {
+                String temp = Integer.toString(this.tileArray[i][j].getIndX()) + ":"
+                        + Integer.toString(this.tileArray[i][j].getIndY()) + "\t"
+                        + Integer.toString(this.tileArray[i][j].getX()) + ":"
+                        + Integer.toString(this.tileArray[i][j].getY());
+                System.out.println(temp);
+            }
+        }
+    }
+
+    private void showInfo(int status){
+        for(int i=0; i<xTilesCount; ++i) {
+            for (int j = 0; j < yTilesCount; ++j) {
+                if(this.tileArray[i][j].getStatus() != status){
+                    continue;
+                }
                 String temp = Integer.toString(this.tileArray[i][j].getIndX()) + ":"
                         + Integer.toString(this.tileArray[i][j].getIndY()) + "\t"
                         + Integer.toString(this.tileArray[i][j].getX()) + ":"

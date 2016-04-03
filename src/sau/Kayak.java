@@ -1,24 +1,71 @@
 package sau;
 
-public class Kayak extends Tile{
+public class Kayak extends Tile {
 
-    Kayak(int _x, int _y){
-        setX(_x);
-        setY(_y);
+    private Map map;
+    private int oldIndX, oldIndY;   // indexes of previous state
+
+    Kayak(int _indX, int _indY, Map m) {
+        this.map = m;
+
+        this.oldIndX = _indX;
+        this.oldIndY = _indY;
+
+        setIndX(_indX);
+        setIndY(_indY);
+        calculateXY();
+
         setStatus(statusKayak);
+        updateCurrentPosition(map.getTileArray());
     }
 
-    public void moveRight(){
-        int nextX = this.getX() + Map.tileSize;
-        if(nextX <= ((Map.xTilesCount - 1) * Map.tileSize)) {
-            setX(nextX);
-        }
+    private void calculateXY() {
+        setX(this.getIndX() * Map.tileSize);
+        setY(this.getIndY() * Map.tileSize);
     }
 
-    public void moveLeft(){
-        int nextX = this.getX() - Map.tileSize;
-        if(nextX >= 0) {
-            setX(nextX);
+    public void updatePosition() {
+        Tile[][] tiles = map.getTileArray();
+        updateCurrentPosition(tiles);
+        updatePreviousPosition(tiles);
+        calculateXY();
+    }
+
+    private void updateCurrentPosition(Tile[][] tiles) {
+        tiles[getIndX()][getIndY()].setStatus(statusKayak); // set new kayak position in a global map
+    }
+
+    private void updatePreviousPosition(Tile[][] tiles) {
+        tiles[this.oldIndX][this.oldIndY].setStatus(statusFree);    // release previous kayak position in a global map TODO: status free?
+    }
+
+    public boolean moveRight() {
+        if (this.getIndX() < Map.xTilesCount - 1) {
+            //new position
+            if (this.getIndX() != this.oldIndX) {    // prevention for first move
+                this.oldIndX++;
+            }
+            this.setIndX(this.getIndX() + 1);
+
+            updatePosition();
+            return true;
         }
+
+        return false;
+    }
+
+    public boolean moveLeft() {
+        if (this.getIndX() > 0) {
+            //new position
+            if (this.getIndX() != this.oldIndX) {    // prevention for first move
+                this.oldIndX--;
+            }
+            this.setIndX(this.getIndX() - 1);
+
+            updatePosition();
+            return true;
+        }
+
+        return false;
     }
 }
