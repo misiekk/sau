@@ -20,7 +20,7 @@ public class GUI extends javax.swing.JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         setContentPane(this.panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(Map.xTilesCount*Map.tileSize+Map.yTilesCount, Map.yTilesCount*Map.tileSize+Map.xTilesCount));
         pack();
 
 /*        startSimulationButton.addActionListener(new ActionListener() {

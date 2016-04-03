@@ -13,6 +13,5 @@ public class MainWindow {
             }
         });
 
-        System.out.print("Siema!");
     }
 }

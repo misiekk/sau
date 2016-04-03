@@ -1,20 +1,21 @@
 package sau;
 
 public class Tile {
-    static private int statusFree = 1;      // wolna
-    static private int statusOccupied = 2;  // zajeta
-    static private int statusKayak = 3;     // obecnie znajduje sie w niej kajak
-    private int x;
-    private int y;
-    private int status; // free, occupied, kayak in
-
+    static public int statusFree = 1;
+    static public int statusOccupied = 2;
+    static public int statusKayak = 3;     // kayak is currently in this tile
+    private int x, y;           // tile coordinates for painting
+    private int indX, indY;     // tile indexes in map array
+    private int status;         // free, occupied, kayak in
 
     Tile(){
     }
 
-    Tile(int _x, int _y){
+    Tile(int _x, int _y, int _idxX, int _idxY){
         this.x = _x;
         this.y = _y;
+        this.indX = _idxX;
+        this.indY = _idxY;
         this.status = statusFree;
     }
 
@@ -27,4 +28,13 @@ public class Tile {
     public int getY(){
         return this.y;
     }
+    public int getIndX(){
+        return this.indX;
+    }
+    public int getIndY(){
+        return this.indY;
+    }
+    public void setX(int _x) {this.x = _x; }
+    public void setY(int _y) {this.y = _y; }
+    public void setStatus(int _status) {this.status = _status; }
 }
