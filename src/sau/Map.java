@@ -26,7 +26,7 @@ public class Map extends JPanel{
         Timer timer = new Timer(timerDelay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                kayak.moveRight();
+                kayak.moveLeft();
                 repaint();
                 showInfo(Tile.statusKayak);
             }

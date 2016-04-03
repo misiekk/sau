@@ -40,32 +40,26 @@ public class Kayak extends Tile {
     }
 
     public boolean moveRight() {
-        if (this.getIndX() < Map.xTilesCount - 1) {
-            //new position
-            if (this.getIndX() != this.oldIndX) {    // prevention for first move
-                this.oldIndX++;
-            }
-            this.setIndX(this.getIndX() + 1);
-
-            updatePosition();
-            return true;
+        if (this.getIndX() >= Map.xTilesCount - 1) {
+            return false;
         }
+        //new position
+        this.oldIndX = this.getIndX();
+        this.setIndX(this.getIndX() + 1);
 
-        return false;
+        updatePosition();
+        return true;
     }
 
     public boolean moveLeft() {
-        if (this.getIndX() > 0) {
-            //new position
-            if (this.getIndX() != this.oldIndX) {    // prevention for first move
-                this.oldIndX--;
-            }
-            this.setIndX(this.getIndX() - 1);
-
-            updatePosition();
-            return true;
+        if (this.getIndX() <= 0) {
+            return false;
         }
+        //new position
+        this.oldIndX = this.getIndX();
+        this.setIndX(this.getIndX() - 1);
 
-        return false;
+        updatePosition();
+        return true;
     }
 }
