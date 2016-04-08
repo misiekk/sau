@@ -2,8 +2,9 @@ package sau;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import static sau.Tile.statusKayak;
+import static sau.Tile.statusFree;
 import static sau.Tile.statusObstacle;
 
 /**
@@ -46,7 +47,9 @@ public class Obstacle implements MapUpdater{
 
     @Override
     public void updatePreviousPosition(Tile[][] tilesArray) {
-        //TODO OLD POSITION NEEDED
+        for(Tile t : tiles) {
+            tilesArray[t.getOldIndX()][t.getOldIndY()].setStatus(statusFree);
+        }
     }
 
     @Override
@@ -55,5 +58,32 @@ public class Obstacle implements MapUpdater{
             t.setX(t.getIndX() * Map.tileSize);
             t.setY(t.getIndY() * Map.tileSize);
         }
+    }
+
+    /* Method moves the obstacle up; if (the part of) the obstacle is out of the map, it removes proper tiles from obstacle
+    * and frees these tiles in the map */
+    public void moveUp(){
+        ArrayList<Tile> tilesToRemove = new ArrayList<>();   // list with tiles of obstacle to remove
+        for(Tile t : tiles) {
+            t.setOldIndY(t.getIndY());
+            t.setIndY(t.getIndY() - 1);
+
+            if(t.getIndY() < 0){
+                tilesToRemove.add(t);
+                map.getTileArray()[t.getIndX()][t.getOldIndY()].setStatus(statusFree);
+            }
+        }
+
+        tiles.removeAll(tilesToRemove);
+
+        updatePosition();
+    }
+
+    /* Method checks if the obstacle should be removed from obstacle list */
+    boolean toRemove(){
+        if(this.tiles.isEmpty()){
+            return true;
+        }
+        return false;
     }
 }

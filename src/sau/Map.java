@@ -10,7 +10,7 @@ public class Map extends JPanel{
     static final public int xTilesCount = 20;
     static final public int yTilesCount = 20;
     static final public int tileSize = 30;  // tile = tileSize x tileSize px
-    static final private int timerDelay = 1000;  // timer delay to set in ms
+    static final private int timerDelay = 250;  // timer delay to set in ms
 
     //private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -30,8 +30,10 @@ public class Map extends JPanel{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 kayak.moveLeft();
+                generator.update();
                 repaint();
-                showInfo(Tile.statusKayak);
+                showInfo(Tile.statusObstacle);
+
             }
         });
         timer.start();
