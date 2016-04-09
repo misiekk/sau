@@ -2,8 +2,6 @@ package sau;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GUI extends javax.swing.JFrame{
     //private JButton startSimulationButton;
@@ -20,7 +18,7 @@ public class GUI extends javax.swing.JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         setContentPane(this.panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(Map.xTilesCount*Map.tileSize+2*Map.yTilesCount, Map.yTilesCount*Map.tileSize+2*Map.xTilesCount));
+        setPreferredSize(new Dimension(Map.X_TILES_COUNT*Map.TILE_SIZE +2*Map.Y_TILES_COUNT, Map.Y_TILES_COUNT *Map.TILE_SIZE +2*Map.X_TILES_COUNT));
         pack();
 
 /*        startSimulationButton.addActionListener(new ActionListener() {

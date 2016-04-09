@@ -7,15 +7,11 @@ package sau;
 
 public class Kayak extends Tile implements MapUpdater{
 
-    private static int secondTileIdx = 1;   // constant value in order to prevent generating errors, i guess
+    private static int SECOND_TILE_IDX = 1;   // constant value in order to prevent generating errors, i guess
     private Map map;
-    //private int oldIndX, oldIndY;   // indexes of previous state - top tile
 
     Kayak(int _indX, int _indY, Map m) {
         this.map = m;
-
-        //this.oldIndX = _indX;
-        //this.oldIndY = _indY;
 
         setIndX(_indX);
         setIndY(_indY);
@@ -24,15 +20,15 @@ public class Kayak extends Tile implements MapUpdater{
 
         calculateXY();
 
-        setStatus(statusKayak);
+        setStatus(STATUS_KAYAK);
         updateCurrentPosition(map.getTileArray());
     }
 
     /* Method sets current coordinates of kayak.
     *  XY cords are used for painting. */
     public void calculateXY() {
-        setX(this.getIndX() * Map.tileSize);
-        setY(this.getIndY() * Map.tileSize);
+        setX(this.getIndX() * Map.TILE_SIZE);
+        setY(this.getIndY() * Map.TILE_SIZE);
     }
 
     /* Method updates current and previous kayak's position in a global map */
@@ -46,22 +42,22 @@ public class Kayak extends Tile implements MapUpdater{
 
     @Override
     public void updateCurrentPosition(Tile[][] tilesArray) {
-        tilesArray[getIndX()][getIndY()].setStatus(statusKayak); // set new kayak position in a global map - top tile
-        tilesArray[getIndX()][getIndY()+secondTileIdx].setStatus(statusKayak);   // bottom tile
+        tilesArray[getIndX()][getIndY()].setStatus(STATUS_KAYAK); // set new kayak position in a global map - top tile
+        tilesArray[getIndX()][getIndY()+ SECOND_TILE_IDX].setStatus(STATUS_KAYAK);   // bottom tile
     }
 
     @Override
     public void updatePreviousPosition(Tile[][] tilesArray) {
-        //tilesArray[this.oldIndX][this.oldIndY].setStatus(statusFree);    // release previous kayak position in a global map TODO: status free?
-        //tilesArray[this.oldIndX][this.oldIndY+secondTileIdx].setStatus(statusFree);  // bottom tile
-        tilesArray[this.getOldIndX()][this.getOldIndY()].setStatus(statusFree);    // release previous kayak position in a global map TODO: status free?
-        tilesArray[this.getOldIndX()][this.getOldIndY()+secondTileIdx].setStatus(statusFree);  // bottom tile
+        //tilesArray[this.oldIndX][this.oldIndY].setStatus(STATUS_FREE);    // release previous kayak position in a global map TODO: status free?
+        //tilesArray[this.oldIndX][this.oldIndY+SECOND_TILE_IDX].setStatus(STATUS_FREE);  // bottom tile
+        tilesArray[this.getOldIndX()][this.getOldIndY()].setStatus(STATUS_FREE);    // release previous kayak position in a global map TODO: status free?
+        tilesArray[this.getOldIndX()][this.getOldIndY()+ SECOND_TILE_IDX].setStatus(STATUS_FREE);  // bottom tile
     }
 
     /* Method checks if kayak can move one tile RIGHT, if yes updates kayak's position in a global map and returns true;
      * else returns false and does nothing */
     public boolean moveRight() { // TODO check if no obstacle?
-        if (this.getIndX() >= Map.xTilesCount - 1) {
+        if (this.getIndX() >= Map.X_TILES_COUNT - 1) {
             return false;
         }
         //new position

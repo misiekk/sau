@@ -2,10 +2,9 @@ package sau;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import static sau.Tile.statusFree;
-import static sau.Tile.statusObstacle;
+import static sau.Tile.STATUS_FREE;
+import static sau.Tile.STATUS_OBSTACLE;
 
 /**
  * Represents single obstacle on the map
@@ -25,7 +24,9 @@ public class Obstacle implements MapUpdater{
 
     public void paint(Graphics g){
         for(Tile t : tiles){
-            g.fillRect(t.getX(), t.getY(), Map.tileSize, Map.tileSize);
+            if(t.getIndY() <  Map.Y_TILES_COUNT) {    // prevention from going out of bound of global map indexes for obstacles > 1 tiles high
+                g.fillRect(t.getX(), t.getY(), Map.TILE_SIZE, Map.TILE_SIZE);
+            }
         }
     }
 
@@ -40,7 +41,9 @@ public class Obstacle implements MapUpdater{
     @Override
     public void updateCurrentPosition(Tile[][] tilesArray) {
         for(Tile t : tiles){
-            tilesArray[t.getIndX()][t.getIndY()].setStatus(statusObstacle); // set new obstacle position in a global map
+            if(t.getIndY() < Map.Y_TILES_COUNT) {     // prevention from going out of bound of global map indexes for obstacles > 1 tiles high
+                tilesArray[t.getIndX()][t.getIndY()].setStatus(STATUS_OBSTACLE); // set new obstacle position in a global map
+            }
         }
 
     }
@@ -48,15 +51,17 @@ public class Obstacle implements MapUpdater{
     @Override
     public void updatePreviousPosition(Tile[][] tilesArray) {
         for(Tile t : tiles) {
-            tilesArray[t.getOldIndX()][t.getOldIndY()].setStatus(statusFree);
+            if(t.getOldIndY() < Map.Y_TILES_COUNT) {      // prevention from going out of bound of global map indexes for obstacles > 1 tiles high
+                tilesArray[t.getOldIndX()][t.getOldIndY()].setStatus(STATUS_FREE);
+            }
         }
     }
 
     @Override
     public void calculateXY() {
         for(Tile t : tiles){
-            t.setX(t.getIndX() * Map.tileSize);
-            t.setY(t.getIndY() * Map.tileSize);
+            t.setX(t.getIndX() * Map.TILE_SIZE);
+            t.setY(t.getIndY() * Map.TILE_SIZE);
         }
     }
 
@@ -70,7 +75,7 @@ public class Obstacle implements MapUpdater{
 
             if(t.getIndY() < 0){
                 tilesToRemove.add(t);
-                map.getTileArray()[t.getIndX()][t.getOldIndY()].setStatus(statusFree);
+                map.getTileArray()[t.getIndX()][t.getOldIndY()].setStatus(STATUS_FREE);
             }
         }
 
@@ -81,9 +86,6 @@ public class Obstacle implements MapUpdater{
 
     /* Method checks if the obstacle should be removed from obstacle list */
     boolean toRemove(){
-        if(this.tiles.isEmpty()){
-            return true;
-        }
-        return false;
+        return this.tiles.isEmpty();
     }
 }

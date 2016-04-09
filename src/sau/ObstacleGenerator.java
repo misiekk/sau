@@ -1,20 +1,26 @@
 package sau;
 
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Generates obstacles
  */
 public class ObstacleGenerator {
+    private static int MAX_OBSTACLE_LENGTH = 10;
+    private static int MAX_OBSTACLE_HEIGHT = 4;
+    private static int FREQ_COUNTER = 10; // how many tiles will be free after generating an obstacle before the next one
+    private int freq;       // parameter to set frequency of generating obstacles...?
+
     private Map map;
 
     ObstacleGenerator(Map _m){
         this.map = _m;
+        this.freq = 0;
     }
 
     /* Method moves up all the obstacles and removes elements which are out of the map */
     public void update(){
-
         for (Obstacle o : map.getObstaclesList()){
             o.moveUp();
         }
@@ -31,17 +37,33 @@ public class ObstacleGenerator {
 
     // TODO
     public void generate(){
-        // let's generate obstacles consisted of 3 tiles
-        if(!map.getObstaclesList().isEmpty()){
+        /*if(!map.getObstaclesList().isEmpty()){  // only 1 obstacle allowed on the map - at least for now
+            return;
+        }*/
+
+        if((freq++) < FREQ_COUNTER){
             return;
         }
-        Obstacle o = new Obstacle(map);
-        for(int i=0; i<3; ++i){
-            Tile t = new Tile(Map.tileSize*i, Map.tileSize*(Map.yTilesCount-1), i, (Map.yTilesCount-1));
-            t.setStatus(Tile.statusObstacle);
-            o.addTile(t);
-        }
 
+        this.freq = 0;
+        Random rand = new Random();
+        int obstacleLength = rand.nextInt(MAX_OBSTACLE_LENGTH) + 3;     // from 1 to maxObstacleLength
+        int obstacleHeight = rand.nextInt(MAX_OBSTACLE_HEIGHT) + 1;     // from 1 to maxObstacleHeight
+        int initialXIdx = rand.nextInt(Map.X_TILES_COUNT - obstacleLength);   // x index of obstacle from 0 to max (according to its generated length)
+        //System.out.println(initialXIdx + ": " + obstacleLength + "x" + obstacleHeight);
+
+        Obstacle o = new Obstacle(map);
+        for(int h = 0; h < obstacleHeight; ++h) {
+            for (int i = 0; i < obstacleLength; ++i) {
+                Tile t = new Tile(
+                        Map.TILE_SIZE * (i + initialXIdx),                   // x
+                        Map.TILE_SIZE * (Map.Y_TILES_COUNT - 1 + h),           // y
+                        i + initialXIdx,                                    // x index
+                        (Map.Y_TILES_COUNT - 1 + h));                         // y index
+                t.setStatus(Tile.STATUS_OBSTACLE);
+                o.addTile(t);
+            }
+        }
         map.getObstaclesList().add(o);
     }
 }

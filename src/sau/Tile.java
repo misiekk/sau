@@ -1,9 +1,9 @@
 package sau;
 
 public class Tile {
-    static public int statusFree = 1;
-    static public int statusObstacle = 2;
-    static public int statusKayak = 3;     // kayak is currently in this tile
+    static public int STATUS_FREE = 1;
+    static public int STATUS_OBSTACLE = 2;
+    static public int STATUS_KAYAK = 3;     // kayak is currently in this tile
     private int x, y;           // tile coordinates for painting
     private int indX, indY, oldIndX, oldIndY;     // tile indexes in map array
     private int status;         // free, occupied, kayak in
@@ -18,7 +18,7 @@ public class Tile {
         this.indY = _idxY;
         this.oldIndX = _idxX;
         this.oldIndY = _idxY;
-        this.status = statusFree;
+        this.status = STATUS_FREE;
     }
 
     public int getStatus(){

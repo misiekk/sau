@@ -7,10 +7,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class Map extends JPanel{
-    static final public int xTilesCount = 20;
-    static final public int yTilesCount = 20;
-    static final public int tileSize = 30;  // tile = tileSize x tileSize px
-    static final private int timerDelay = 250;  // timer delay to set in ms
+    static final public int X_TILES_COUNT = 30;
+    static final public int Y_TILES_COUNT = 20;
+    static final public int TILE_SIZE = 30;  // tile = TILE_SIZE x TILE_SIZE px
+    static final private int TIMER_DELAY = 50;  // timer delay to set in ms
 
     //private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -21,19 +21,18 @@ public class Map extends JPanel{
 
     Map() {
         obstaclesList = new ArrayList<Obstacle>();
-        tileArray = new Tile[xTilesCount][yTilesCount];
+        tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
         kayak = new Kayak(5, 5, this);  //TODO kayak initial position
         generator = new ObstacleGenerator(this);
 
-        Timer timer = new Timer(timerDelay, new ActionListener() {
+        Timer timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                kayak.moveLeft();
+                //kayak.moveLeft();
                 generator.update();
                 repaint();
-                showInfo(Tile.statusObstacle);
-
+                //showInfo(Tile.STATUS_OBSTACLE);
             }
         });
         timer.start();
@@ -43,15 +42,13 @@ public class Map extends JPanel{
 
     }
     public ArrayList<Obstacle> getObstaclesList() { return this.obstaclesList; }
-    public Tile[][] getTileArray(){ return this.tileArray; };
+    public Tile[][] getTileArray(){ return this.tileArray; }
     private void paintKayak(Graphics g){
-        //Graphics g = this.getGraphics();
         g.setColor(Color.YELLOW);
-        g.fillRect(kayak.getX(), kayak.getY(), tileSize, 2*tileSize);
+        g.fillRect(kayak.getX(), kayak.getY(), TILE_SIZE, 2* TILE_SIZE);
     }
 
     private void paintObstacles(Graphics g){
-        //Graphics g = this.getGraphics();
         g.setColor(Color.GRAY);
         for(Obstacle o : obstaclesList){
             o.paint(g);
@@ -59,12 +56,11 @@ public class Map extends JPanel{
     }
 
     private void initTileList(){
-        for(int i=0; i<xTilesCount; ++i){
-            for(int j=0; j<yTilesCount; ++j) {
-                int x = tileSize * i;
-                int y = tileSize * j;
+        for(int i=0; i<X_TILES_COUNT; ++i){
+            for(int j = 0; j< Y_TILES_COUNT; ++j) {
+                int x = TILE_SIZE * i;
+                int y = TILE_SIZE * j;
                 Tile t = new Tile(x, y, i, j);
-                //tileList.add(t);
                 tileArray[i][j] = t;
             }
         }
@@ -74,15 +70,11 @@ public class Map extends JPanel{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        for(int i=0; i<xTilesCount; ++i) {
-            for (int j = 0; j < yTilesCount; ++j) {
-                g.drawRect(this.tileArray[i][j].getX(), this.tileArray[i][j].getY(), tileSize, tileSize);
+        for(int i=0; i<X_TILES_COUNT; ++i) {
+            for (int j = 0; j < Y_TILES_COUNT; ++j) {
+                g.drawRect(this.tileArray[i][j].getX(), this.tileArray[i][j].getY(), TILE_SIZE, TILE_SIZE);
             }
         }
-        /*
-        for(int i=0; i < this.tileList.size(); ++i) {
-            g.drawRect(this.tileList.get(i).getX(), this.tileList.get(i).getY(), tileSize, tileSize);
-        }*/
 
         paintKayak(g);
         paintObstacles(g);
@@ -90,8 +82,8 @@ public class Map extends JPanel{
 
     /* For debugging purposes */
     private void showMap(){
-        for(int i=0; i<xTilesCount; ++i) {
-            for (int j = 0; j < yTilesCount; ++j) {
+        for(int i=0; i<X_TILES_COUNT; ++i) {
+            for (int j = 0; j < Y_TILES_COUNT; ++j) {
                 String temp = Integer.toString(this.tileArray[i][j].getIndX()) + ":"
                         + Integer.toString(this.tileArray[i][j].getIndY()) + "\t"
                         + Integer.toString(this.tileArray[i][j].getX()) + ":"
@@ -103,8 +95,8 @@ public class Map extends JPanel{
 
     /* For debugging purposes */
     private void showInfo(int status){
-        for(int i=0; i<xTilesCount; ++i) {
-            for (int j = 0; j < yTilesCount; ++j) {
+        for(int i=0; i<X_TILES_COUNT; ++i) {
+            for (int j = 0; j < Y_TILES_COUNT; ++j) {
                 if(this.tileArray[i][j].getStatus() != status){
                     continue;
                 }
