@@ -7,10 +7,10 @@ import java.util.Random;
  * Generates obstacles
  */
 public class ObstacleGenerator {
-    private static int MAX_OBSTACLE_LENGTH = 10;
-    private static int MAX_OBSTACLE_HEIGHT = 4;
+    private static int MAX_OBSTACLE_LENGTH = 3;
+    private static int MAX_OBSTACLE_HEIGHT = 10;
     private static int FREQ_COUNTER = 10; // how many tiles will be free after generating an obstacle before the next one
-    private int freq;       // parameter to set frequency of generating obstacles...?
+    private int freq;       // parameter to set frequency of generating obstacles -> number of free tiles (in y axis) between 2 obstacles
 
     private Map map;
 
@@ -41,14 +41,14 @@ public class ObstacleGenerator {
             return;
         }*/
 
-        if((freq++) < FREQ_COUNTER){
+        if((freq++) < FREQ_COUNTER+MAX_OBSTACLE_HEIGHT){
             return;
         }
 
         this.freq = 0;
         Random rand = new Random();
-        int obstacleLength = rand.nextInt(MAX_OBSTACLE_LENGTH) + 3;     // from 1 to maxObstacleLength
-        int obstacleHeight = rand.nextInt(MAX_OBSTACLE_HEIGHT) + 1;     // from 1 to maxObstacleHeight
+        int obstacleLength = rand.nextInt(MAX_OBSTACLE_LENGTH) + 1;     // from 1 to maxObstacleLength
+        int obstacleHeight = rand.nextInt(MAX_OBSTACLE_HEIGHT) + 5;     // from 1 to maxObstacleHeight
         int initialXIdx = rand.nextInt(Map.X_TILES_COUNT - obstacleLength);   // x index of obstacle from 0 to max (according to its generated length)
         //System.out.println(initialXIdx + ": " + obstacleLength + "x" + obstacleHeight);
 

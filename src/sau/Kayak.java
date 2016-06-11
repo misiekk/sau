@@ -1,5 +1,8 @@
 package sau;
 
+import static sau.Map.X_TILES_COUNT;
+import static sau.Map.Y_TILES_COUNT;
+
 /**
 * Kayak consists of 2 tiles. All kayak data are connected to the TOP tile.
 * Kayak can move only in one axis (left-right).
@@ -7,7 +10,8 @@ package sau;
 
 public class Kayak extends Tile implements MapUpdater{
 
-    private static int SECOND_TILE_IDX = 1;   // constant value in order to prevent generating errors, i guess
+    public static int KAYAK_WIDTH = 2;
+    public static int KAYAK_HEIGHT = 5;
     private Map map;
 
     Kayak(int _indX, int _indY, Map m) {
@@ -35,29 +39,36 @@ public class Kayak extends Tile implements MapUpdater{
     @Override
     public void updatePosition() {
         Tile[][] tiles = map.getTileArray();
-        updateCurrentPosition(tiles);
         updatePreviousPosition(tiles);
+        updateCurrentPosition(tiles);
         calculateXY();
     }
 
     @Override
     public void updateCurrentPosition(Tile[][] tilesArray) {
-        tilesArray[getIndX()][getIndY()].setStatus(STATUS_KAYAK); // set new kayak position in a global map - top tile
-        tilesArray[getIndX()][getIndY()+ SECOND_TILE_IDX].setStatus(STATUS_KAYAK);   // bottom tile
+        for(int i=0; i<KAYAK_WIDTH; ++i){   // x
+            for(int j=0; j<KAYAK_HEIGHT; ++j){  // y
+                tilesArray[getIndX()+i][getIndY()+j].setStatus(STATUS_KAYAK);
+            }
+        }
     }
 
     @Override
     public void updatePreviousPosition(Tile[][] tilesArray) {
-        //tilesArray[this.oldIndX][this.oldIndY].setStatus(STATUS_FREE);    // release previous kayak position in a global map TODO: status free?
-        //tilesArray[this.oldIndX][this.oldIndY+SECOND_TILE_IDX].setStatus(STATUS_FREE);  // bottom tile
-        tilesArray[this.getOldIndX()][this.getOldIndY()].setStatus(STATUS_FREE);    // release previous kayak position in a global map TODO: status free?
-        tilesArray[this.getOldIndX()][this.getOldIndY()+ SECOND_TILE_IDX].setStatus(STATUS_FREE);  // bottom tile
+        for(int i=0; i<X_TILES_COUNT; ++i){
+            for (int j = 0; j < Y_TILES_COUNT; ++j) {
+                if(tilesArray[i][j].getStatus() != STATUS_KAYAK){
+                    continue;
+                }
+                tilesArray[i][j].setStatus(STATUS_FREE);
+            }
+        }
     }
 
     /* Method checks if kayak can move one tile RIGHT, if yes updates kayak's position in a global map and returns true;
      * else returns false and does nothing */
-    public boolean moveRight() { // TODO check if no obstacle?
-        if (this.getIndX() >= Map.X_TILES_COUNT - 1) {
+    public boolean moveRight() {
+        if (this.getIndX() >= X_TILES_COUNT - KAYAK_WIDTH) {
             return false;
         }
         //new position
@@ -70,7 +81,7 @@ public class Kayak extends Tile implements MapUpdater{
 
     /* Method checks if kayak can move one tile LEFT, if yes updates kayak's position in a global map and returns true;
      * else returns false and does nothing */
-    public boolean moveLeft() { // TODO check if no obstacle?
+    public boolean moveLeft() {
         if (this.getIndX() <= 0) {
             return false;
         }

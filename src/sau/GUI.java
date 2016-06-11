@@ -12,6 +12,7 @@ public class GUI extends javax.swing.JFrame{
         init();
         map = new Map();
         panel.add(map);
+        map.startSimulation();
     }
 
     private void init(){
