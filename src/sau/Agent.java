@@ -24,7 +24,7 @@ public class Agent {
     }
 
     private void initWeights(){
-        for (int i =0 ; i < State.numFeatures; i++)
+        for (int i =0 ; i < State.NUM_FEATURES; i++)
             weights.add(0.0f);
     }
 

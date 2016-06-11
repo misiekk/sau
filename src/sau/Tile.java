@@ -4,6 +4,7 @@ public class Tile {
     static public int STATUS_FREE = 1;
     static public int STATUS_OBSTACLE = 2;
     static public int STATUS_KAYAK = 3;     // kayak is currently in this tile
+    static public int STATUS_COLLISION = 4; // kayak and obstacle both in the same tile
     private int x, y;           // tile coordinates for painting
     private int indX, indY, oldIndX, oldIndY;     // tile indexes in map array
     private int status;         // free, occupied, kayak in

@@ -48,7 +48,11 @@ public class Kayak extends Tile implements MapUpdater{
     public void updateCurrentPosition(Tile[][] tilesArray) {
         for(int i=0; i<KAYAK_WIDTH; ++i){   // x
             for(int j=0; j<KAYAK_HEIGHT; ++j){  // y
-                tilesArray[getIndX()+i][getIndY()+j].setStatus(STATUS_KAYAK);
+                Tile tile = tilesArray[getIndX()+i][getIndY()+j];
+                if(tile.getStatus() == STATUS_OBSTACLE)
+                    tile.setStatus(STATUS_COLLISION);
+                else
+                    tile.setStatus(STATUS_KAYAK);
             }
         }
     }

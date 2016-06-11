@@ -10,10 +10,10 @@ import static sau.Kayak.KAYAK_HEIGHT;
 import static sau.Kayak.KAYAK_WIDTH;
 
 public class Map extends JPanel{
-    static final public int X_TILES_COUNT = 30;
-    static final public int Y_TILES_COUNT = 60;
+    static final public int X_TILES_COUNT = 20;
+    static final public int Y_TILES_COUNT = 50;
     static final public int TILE_SIZE = 10;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 50;  // timer delay to set in ms
+    static final private int TIMER_DELAY = 100;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -21,14 +21,15 @@ public class Map extends JPanel{
     private Kayak kayak;        // kayak occupies only 1 tile
     private ArrayList<Obstacle> obstaclesList;
     private ObstacleGenerator generator;
+    private Info infoLabel;
 
-    Map() {
+    Map(Info info) {
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
-        kayak = new Kayak(5, 5, this);  //TODO kayak initial position
+        kayak = new Kayak(5, 7, this);  //TODO kayak initial position
         generator = new ObstacleGenerator(this);
-
+        this.infoLabel = info;
         //showMap();
 
     }
@@ -40,6 +41,7 @@ public class Map extends JPanel{
                 //kayak.moveRight();
                 generator.update();
                 repaint();
+                infoLabel.update();
                 //showInfo(Tile.STATUS_KAYAK);
             }
         });
@@ -136,6 +138,16 @@ public class Map extends JPanel{
             }
         }
         System.out.println("---");
+    }
+
+    public Kayak getKayak(){
+        return kayak;
+    }
+    public boolean collisionOccured(){
+        for (Obstacle rock : obstaclesList){
+            ;
+        }
+        return false;
     }
 
 }

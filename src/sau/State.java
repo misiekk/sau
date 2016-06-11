@@ -5,9 +5,13 @@ import java.util.List;
  * Created by kasia on 11.06.16.
  */
 public class State {
-    public static final int numFeatures = 5;
-    public State(){
-
+    public static final int NUM_FEATURES = 5;
+    //private Tile[][] tiles;
+    private Map map;
+    private final int stayingAliveValue = 1;
+    private final int dyingPenalty = - 1000;
+    public State(Map map){
+        this.map = map;
     }
 
     public ArrayList<Action> getLegalActions(){
@@ -17,6 +21,9 @@ public class State {
 
     public float getScore(){
         float score = 0;
+        //if kayak encountered an obstacle return a negative score
+
+        //otherwise return a positive score
         return  score;
     }
 }
