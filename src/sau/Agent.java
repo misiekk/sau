@@ -16,11 +16,16 @@ public class Agent {
     float totalTestRewards = 0.0f;
     int episodesSoFar = 0;
     ArrayList<Float> weights; // feature functions' weight for approximation
-    Agent(float alpha, float epsilon, float gamma, int numTraining){
+    public Agent(float alpha, float epsilon, float gamma, int numTraining){
         this.alpha = alpha;
         this.epsilon = epsilon;
         this.gamma = gamma;
         this.numTraining = numTraining;
+    }
+
+    private void initWeights(){
+        for (int i =0 ; i < State.numFeatures; i++)
+            weights.add(0.0f);
     }
 
     public void startEpisode(){
