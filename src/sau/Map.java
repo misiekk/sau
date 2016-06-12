@@ -22,27 +22,28 @@ public class Map extends JPanel{
     private Kayak kayak;        // kayak occupies only 1 tile
     private ArrayList<Obstacle> obstaclesList;
     private ObstacleGenerator generator;
-    private Info infoLabel;
     private boolean direction = true;   // TODO do testow zmian kierunku kajaka
-    Map(Info info) {
+    private Agent agent;
+    private String collisionPlace="";
+    private int counter = 0;
+    Map() {
+        agent = new Agent(0.8f, 0.3f, 0.1f, 1);
+//        setStartState();
+    }
+
+    private void setStartState(){
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
-
         kayak = new Kayak(3, 0, this);  //TODO kayak initial position
+        kayak.setAgent(agent);
+        agent.setKayak(kayak);
         generator = new ObstacleGenerator(this);
-        this.infoLabel = info;
-        initAgent();
-        //showMap();
+        repaint();
 
     }
-
-    public void initAgent(){
-        Agent regularAgent = new Agent(kayak, 0.8f, 0.3f, 0.1f, 1);
-        kayak.setAgent(regularAgent);
-    }
-
     public void startSimulation(){
+        setStartState();
         kayak.getAgent().startEpisode();
         kayak.getAgent().observe(new State(kayak)); //observe initial state
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
@@ -61,7 +62,7 @@ public class Map extends JPanel{
 
                 generator.update();
                 kayak.observeObstacles();
-                infoLabel.update();
+                //infoLabel.update();
                 State currentState = new State(kayak);
                 updateMap();
                 repaint();
@@ -69,6 +70,7 @@ public class Map extends JPanel{
                 agent.act(currentState);
                 if(isCollision()){
                     agent.atTerminalState(currentState);
+                    counter++;
                     stopSimulation();
                 }
 
@@ -78,7 +80,8 @@ public class Map extends JPanel{
     }
 
     public void stopSimulation(){
-        this.timer.stop();
+        if(timer != null)
+            this.timer.stop();
         this.timer = null;
 
     }
@@ -87,6 +90,8 @@ public class Map extends JPanel{
         for(int i=0; i<X_TILES_COUNT; ++i){
             for(int j = 0; j< Y_TILES_COUNT; ++j) {
                 if(this.tileArray[i][j].getStatus() == STATUS_COLLISION){
+                    if(collisionPlace.equals(""))
+                        collisionPlace = "Collided at (" + Integer.toString(i) + ", " + Integer.toString(j) + ")";
                     return true;
                 }
             }
@@ -211,6 +216,8 @@ public class Map extends JPanel{
         g.drawString(txt, x + 10, y); y += dy;
         txt = "total test rewards = " + Float.toString(agent.totalTestRewards);
         g.drawString(txt, x + 10, y); y += dy;
+
+        g.drawString(Integer.toString(counter) + ", " + collisionPlace, x + 10, y); y += dy;
 
     }
 

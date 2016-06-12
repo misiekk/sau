@@ -7,18 +7,14 @@ public class GUI extends javax.swing.JFrame{
     //private JButton startSimulationButton;
     private JPanel panel;
     private Map map;
-    private Info info;
     public GUI(){
         super("SAU - RiverKayak");
         init();
-        info = new Info();
-        map = new Map(info);
+        map = new Map();
         panel.add(map);
-        info.setMap(map);
-        //info.update();
-        //setupInfo(map);
-        panel.add(info);
-        map.startSimulation();
+        for (int i = 0; i < 2; i++) {
+            map.startSimulation();
+        }
     }
 
     private void init(){
@@ -38,10 +34,4 @@ public class GUI extends javax.swing.JFrame{
 
         setVisible(true);
     }
-  /*  private void setupInfo(Map map){
-        //String text = "X index = " + Integer.toString(map.getKayak().getIndX()) + " Y index = " + Integer.toString(map.getKayak().getIndY());
-//        int kayakStatus = map.getTileArray()[5][7].getStatus();
-        String text = "Status of (5,7) = " + Integer.toString(map.getTileArray()[5][7].getStatus()); //3 kayak, 4 collision, 2 obstacle, 1 free
-        info = new JLabel(text);
-    }*/
 }

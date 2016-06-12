@@ -17,15 +17,17 @@ public class Agent {
     public int episodesSoFar = 0;
     Kayak kayak;
     ArrayList<Float> weights; // feature functions' weight for approximation
-    public Agent(Kayak kayak, float alpha, float epsilon, float gamma, int numTraining){
+    public Agent(float alpha, float epsilon, float gamma, int numTraining){
         this.alpha = alpha;
         this.epsilon = epsilon;
         this.gamma = gamma;
         this.numTraining = numTraining;
-        this.kayak = kayak;
         initWeights();
     }
 
+    public void setKayak(Kayak kayak){
+        this.kayak = kayak;
+    }
     private void initWeights(){
         weights = new ArrayList<Float>();
         for (int i =0 ; i < State.NUM_FEATURES; i++)
