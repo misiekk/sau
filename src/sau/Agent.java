@@ -94,10 +94,12 @@ public class Agent {
     }
 
     /*return 0 if that state has never been seen
-      returns w*feature vector otherwise
-     */
+      returns w*feature vector otherwise */
     float getQValue(State state, Action action){
         float qValue = 0;
+        //simulate performing action and going from state to nextState
+        State nextState = null; // TODO what here???????????????
+
         return qValue;
     }
 
@@ -105,6 +107,7 @@ public class Agent {
         If there are no legal actions (e.g. at the terminal state, returns 0.0*/
     float getMaxQValue(State state){
        float value = 0;
+
        return value;
     }
 

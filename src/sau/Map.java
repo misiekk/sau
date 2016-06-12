@@ -82,7 +82,7 @@ public class Map extends JPanel{
     }
 
     /* Sets new status of every tile in the map */
-    private void updateMap(){
+    public void updateMap(){
         for(int i=0; i<X_TILES_COUNT; ++i){
             for(int j = 0; j< Y_TILES_COUNT; ++j) {
                 tileArray[i][j].setStatus(Tile.STATUS_FREE);

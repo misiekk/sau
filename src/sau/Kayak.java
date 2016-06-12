@@ -97,4 +97,32 @@ public class Kayak extends Tile{
         calculateXY();
         return true;
     }
+
+    //helper function simulation moving the kayak up the river
+    public boolean moveUp() {
+        //new position
+        for(Tile t : tiles){
+            t.setOldIndY(t.getIndY());
+            t.setIndY(t.getIndY() - 1);
+        }
+        calculateXY();
+
+        //update map
+        map.updateMap();
+        return true;
+    }
+
+    //helper function simulation moving the kayak down the river
+    public boolean moveDown() {
+        //new position
+        for(Tile t : tiles){
+            t.setOldIndY(t.getIndY());
+            t.setIndY(t.getIndY() + 1);
+        }
+        calculateXY();
+
+        //update map
+        map.updateMap();
+        return true;
+    }
 }
