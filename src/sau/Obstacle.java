@@ -20,6 +20,9 @@ public class Obstacle implements MapUpdater{
         this.map = _map;
     }
 
+    public ArrayList<Tile> getTiles(){
+        return this.tiles;
+    }
     public void addTile(Tile t){
         this.tiles.add(t);
     }
@@ -95,8 +98,9 @@ public class Obstacle implements MapUpdater{
         }
 
         tiles.removeAll(tilesToRemove);
+        calculateXY();
 
-        updatePosition();
+        //updatePosition();
     }
 
     /* Method checks if the obstacle should be removed from obstacle list */

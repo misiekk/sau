@@ -8,6 +8,9 @@ import java.util.ArrayList;
 
 import static sau.Kayak.KAYAK_HEIGHT;
 import static sau.Kayak.KAYAK_WIDTH;
+import static sau.Tile.STATUS_COLLISION;
+import static sau.Tile.STATUS_KAYAK;
+import static sau.Tile.STATUS_OBSTACLE;
 
 public class Map extends JPanel{
     static final public int X_TILES_COUNT = 5;
@@ -22,12 +25,12 @@ public class Map extends JPanel{
     private ArrayList<Obstacle> obstaclesList;
     private ObstacleGenerator generator;
     private Info infoLabel;
-
+    private boolean direction = true;   // TODO do testow zmian kierunku kajaka
     Map(Info info) {
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
-        kayak = new Kayak(0, 7, this);  //TODO kayak initial position
+        kayak = new Kayak(0, 0, this);  //TODO kayak initial position
         generator = new ObstacleGenerator(this);
         this.infoLabel = info;
         //showMap();
@@ -38,15 +41,27 @@ public class Map extends JPanel{
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                //kayak.moveRight();
-                generator.update();
-                repaint();
-                infoLabel.update();
-                showInfo(Tile.STATUS_KAYAK);
-
-                if(generator.updateCollision()){
-                    stopSimulation();
+                if(direction){
+                    if(!kayak.moveRight()){
+                        direction = false;
+                    }
                 }
+                else{
+                    if(!kayak.moveLeft()){
+                        direction = true;
+                    }
+                }
+
+                generator.update();
+                infoLabel.update();
+                updateMap();
+                repaint();
+                //showInfo(Tile.STATUS_KAYAK);
+
+                /*if(generator.updateCollision()){
+                    stopSimulation();
+                }*/
+
             }
         });
         timer.start();
@@ -55,6 +70,32 @@ public class Map extends JPanel{
         this.timer.stop();
         this.timer = null;
     }
+
+    private void updateMap(){
+        for(int i=0; i<X_TILES_COUNT; ++i){
+            for(int j = 0; j< Y_TILES_COUNT; ++j) {
+                tileArray[i][j].setStatus(Tile.STATUS_FREE);
+            }
+        }
+
+        for(Tile t : kayak.getTiles()){
+            this.tileArray[t.getIndX()][t.getIndY()].setStatus(STATUS_KAYAK);
+        }
+
+        for(Obstacle o : this.getObstaclesList()){
+            for(Tile t : o.getTiles()){
+                if(t.getIndY() < Y_TILES_COUNT)
+                    if(tileArray[t.getIndX()][t.getIndY()].getStatus() == STATUS_KAYAK) {
+                        this.tileArray[t.getIndX()][t.getIndY()].setStatus(STATUS_COLLISION);
+                    }
+                    else {
+                        this.tileArray[t.getIndX()][t.getIndY()].setStatus(STATUS_OBSTACLE);
+                    }
+            }
+        }
+    }
+
+
 
     private void resetMap(){
         for(int i=0; i<X_TILES_COUNT; ++i){
@@ -73,11 +114,15 @@ public class Map extends JPanel{
         g.setColor(Color.YELLOW);
 
         //TODO loop below is inefficient but exists for checking correctness of calculations
+        for(Tile t : kayak.getTiles()){
+            g.fillRect(t.getX(), t.getY(), TILE_SIZE, TILE_SIZE);
+        }
+        /*
         for(int i=0; i<KAYAK_WIDTH; ++i){   // x
             for(int j=0; j<KAYAK_HEIGHT; ++j){  // y
                 g.fillRect((kayak.getIndX()+i)*TILE_SIZE, (kayak.getIndY()+j)*TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
-        }
+        }*/
         //TODO this is better for painting
         //g.fillRect(kayak.getX(), kayak.getY(), TILE_SIZE * KAYAK_WIDTH, TILE_SIZE * KAYAK_HEIGHT);
     }
@@ -116,7 +161,7 @@ public class Map extends JPanel{
         for(int i=0; i<X_TILES_COUNT; ++i) {
             for (int j = 0; j < Y_TILES_COUNT; ++j) {
                 Tile tile = tileArray[i][j];
-                g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY());
+                g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY()+TILE_SIZE);
             }
         }
 
