@@ -11,7 +11,7 @@ import static sau.Tile.*;
 /**
  * Represents single obstacle on the map
  */
-public class Obstacle implements MapUpdater{
+public class Obstacle{
     private Map map;
     private ArrayList<Tile> tiles;
 
@@ -35,41 +35,6 @@ public class Obstacle implements MapUpdater{
         }
     }
 
-    @Override
-    public void updatePosition() {
-        Tile[][] mapTiles = map.getTileArray();
-        updateCurrentPosition(mapTiles);
-        updatePreviousPosition(mapTiles);
-        calculateXY();
-    }
-
-    @Override
-    public void updateCurrentPosition(Tile[][] mapTiles) {
-        for(Tile t : tiles){
-            if(t.getIndY() < Y_TILES_COUNT) {     // prevention from going out of bound of global map indexes for obstacles > 1 tiles high
-                //mapTiles[t.getIndX()][t.getIndY()].setStatus(STATUS_OBSTACLE); // set new obstacle position in a global map
-                if(mapTiles[t.getIndX()][t.getIndY()].getStatus() == STATUS_KAYAK)
-                    mapTiles[t.getIndX()][t.getIndY()].setStatus(STATUS_COLLISION);
-                else
-                    mapTiles[t.getIndX()][t.getIndY()].setStatus(STATUS_OBSTACLE); // set new obstacle position in a global map
-            }
-        }
-    }
-
-    @Override
-    public void updatePreviousPosition(Tile[][] mapTiles) {
-        for(Tile t : tiles) {
-            if(t.getOldIndY() < Y_TILES_COUNT) {      // prevention from going out of bound of global map indexes for obstacles > 1 tiles high
-                mapTiles[t.getOldIndX()][t.getOldIndY()].setStatus(STATUS_FREE);
-                /*if(t.getStatus() == STATUS_KAYAK)
-                    mapTiles[t.getIndX()][t.getIndY()].setStatus(STATUS_COLLISION);
-                else
-                    mapTiles[t.getOldIndX()][t.getOldIndY()].setStatus(STATUS_FREE);*/
-            }
-        }
-    }
-
-    @Override
     public void calculateXY() {
         for(Tile t : tiles){
             t.setX(t.getIndX() * Map.TILE_SIZE);
@@ -77,8 +42,8 @@ public class Obstacle implements MapUpdater{
         }
     }
 
-    /* Method moves the obstacle up; if (the part of) the obstacle is out of the map, it removes proper tiles from obstacle
-    * and frees these tiles in the map */
+    /* Method moves the obstacle up and recalculates XY cords of an obstacle
+     * if (the part of) the obstacle is out of the map, it removes proper tiles from obstacle */
     public void moveUp(){
         ArrayList<Tile> tilesToRemove = new ArrayList<>();   // list with tiles of obstacle to remove
         for(Tile t : tiles) {
@@ -87,20 +52,11 @@ public class Obstacle implements MapUpdater{
 
             if(t.getIndY() < 0){
                 tilesToRemove.add(t);
-                //map.getTileArray()[t.getIndX()][t.getOldIndY()].setStatus(STATUS_FREE);
-
-                /*Tile tile = map.getTileArray()[t.getIndX()][t.getOldIndY()];
-                if(tile.getStatus() == STATUS_KAYAK)
-                    tile.setStatus(STATUS_COLLISION);
-                else
-                    tile.setStatus(STATUS_FREE);*/
             }
         }
-
         tiles.removeAll(tilesToRemove);
-        calculateXY();
 
-        //updatePosition();
+        calculateXY();
     }
 
     /* Method checks if the obstacle should be removed from obstacle list */
@@ -108,16 +64,4 @@ public class Obstacle implements MapUpdater{
         return this.tiles.isEmpty();
     }
 
-    public boolean checkCollision(Tile[][] mapTiles){
-        for(Tile t : tiles){
-            //System.out.println(t.getIndX() + " " + t.getIndY());
-            if(t.getIndY() < Y_TILES_COUNT) {
-                if (mapTiles[t.getIndX()][t.getIndY()].getStatus() == STATUS_KAYAK) {
-                    mapTiles[t.getIndX()][t.getIndY()].setStatus(STATUS_COLLISION);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

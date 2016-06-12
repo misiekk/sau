@@ -7,7 +7,7 @@ import java.util.Random;
  * Generates obstacles
  */
 public class ObstacleGenerator {
-    private static int MAX_OBSTACLE_LENGTH = 1;
+    private static int MAX_OBSTACLE_LENGTH = 3;
     private static int MAX_OBSTACLE_HEIGHT = 10;
     private static int FREQ_COUNTER = 10; // how many tiles will be free after generating an obstacle before the next one
     private int freq;       // parameter to set frequency of generating obstacles -> number of free tiles (in y axis) between 2 obstacles
@@ -35,12 +35,7 @@ public class ObstacleGenerator {
         generate();
     }
 
-    // TODO
     public void generate(){
-        /*if(!map.getObstaclesList().isEmpty()){  // only 1 obstacle allowed on the map - at least for now
-            return;
-        }*/
-
         if((freq++) < FREQ_COUNTER+MAX_OBSTACLE_HEIGHT){
             return;
         }
@@ -65,16 +60,5 @@ public class ObstacleGenerator {
             }
         }
         map.getObstaclesList().add(o);
-    }
-
-    /* Method checks if kayak position is equal to an obstacle position
-    * if true: sets status COLLISION in global map */
-    public boolean updateCollision(){
-        for (Obstacle o : map.getObstaclesList()){
-            if(o.checkCollision(map.getTileArray())){
-                return true;
-            }
-        }
-        return false;
     }
 }

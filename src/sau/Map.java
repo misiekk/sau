@@ -6,15 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import static sau.Kayak.KAYAK_HEIGHT;
-import static sau.Kayak.KAYAK_WIDTH;
 import static sau.Tile.STATUS_COLLISION;
 import static sau.Tile.STATUS_KAYAK;
 import static sau.Tile.STATUS_OBSTACLE;
 
 public class Map extends JPanel{
-    static final public int X_TILES_COUNT = 5;
-    static final public int Y_TILES_COUNT = 20;
+    static final public int X_TILES_COUNT = 20;
+    static final public int Y_TILES_COUNT = 40;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
     static final private int TIMER_DELAY = 200;  // timer delay to set in ms
 
@@ -41,7 +39,7 @@ public class Map extends JPanel{
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(direction){
+                if(direction){          // Wahadelko
                     if(!kayak.moveRight()){
                         direction = false;
                     }
@@ -56,21 +54,34 @@ public class Map extends JPanel{
                 infoLabel.update();
                 updateMap();
                 repaint();
-                //showInfo(Tile.STATUS_KAYAK);
 
-                /*if(generator.updateCollision()){
+                if(isCollision()){
                     stopSimulation();
-                }*/
+                }
 
             }
         });
         timer.start();
     }
+
     public void stopSimulation(){
         this.timer.stop();
         this.timer = null;
+
+    }
+    /* Returns true if kayak hit the obstacle */
+    private boolean isCollision(){
+        for(int i=0; i<X_TILES_COUNT; ++i){
+            for(int j = 0; j< Y_TILES_COUNT; ++j) {
+                if(this.tileArray[i][j].getStatus() == STATUS_COLLISION){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
+    /* Sets new status of every tile in the map */
     private void updateMap(){
         for(int i=0; i<X_TILES_COUNT; ++i){
             for(int j = 0; j< Y_TILES_COUNT; ++j) {
@@ -97,34 +108,14 @@ public class Map extends JPanel{
 
 
 
-    private void resetMap(){
-        for(int i=0; i<X_TILES_COUNT; ++i){
-            for(int j = 0; j< Y_TILES_COUNT; ++j) {
-                tileArray[i][j].setStatus(Tile.STATUS_FREE);
-            }
-        }
-
-        this.obstaclesList.clear();
-    }
-
-
     public ArrayList<Obstacle> getObstaclesList() { return this.obstaclesList; }
     public Tile[][] getTileArray(){ return this.tileArray; }
     private void paintKayak(Graphics g){
         g.setColor(Color.YELLOW);
 
-        //TODO loop below is inefficient but exists for checking correctness of calculations
         for(Tile t : kayak.getTiles()){
             g.fillRect(t.getX(), t.getY(), TILE_SIZE, TILE_SIZE);
         }
-        /*
-        for(int i=0; i<KAYAK_WIDTH; ++i){   // x
-            for(int j=0; j<KAYAK_HEIGHT; ++j){  // y
-                g.fillRect((kayak.getIndX()+i)*TILE_SIZE, (kayak.getIndY()+j)*TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
-        }*/
-        //TODO this is better for painting
-        //g.fillRect(kayak.getX(), kayak.getY(), TILE_SIZE * KAYAK_WIDTH, TILE_SIZE * KAYAK_HEIGHT);
     }
 
     private void paintObstacles(Graphics g){
@@ -200,12 +191,7 @@ public class Map extends JPanel{
     public Kayak getKayak(){
         return kayak;
     }
-    public boolean collisionOccured(){
-        for (Obstacle rock : obstaclesList){
-            ;
-        }
-        return false;
-    }
+
 
 }
 
