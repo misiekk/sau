@@ -8,7 +8,7 @@ public class Action {
     static final Integer RIGHT = 1;
     static final Integer STRAIGHT = 0;
     public Integer direction;
-    Action(Integer direction){
+    public Action(Integer direction){
         this.direction = direction;
     }
 

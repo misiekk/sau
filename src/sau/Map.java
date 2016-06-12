@@ -28,14 +28,23 @@ public class Map extends JPanel{
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
+
         kayak = new Kayak(3, 0, this);  //TODO kayak initial position
         generator = new ObstacleGenerator(this);
         this.infoLabel = info;
+        initAgent();
         //showMap();
 
     }
 
+    public void initAgent(){
+        Agent regularAgent = new Agent(kayak, 0.8f, 0.3f, 0.1f, 1);
+        kayak.setAgent(regularAgent);
+    }
+
     public void startSimulation(){
+        kayak.getAgent().startEpisode();
+        kayak.getAgent().observe(new State(kayak)); //observe initial state
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -51,12 +60,15 @@ public class Map extends JPanel{
                 }*/
 
                 generator.update();
-                kayak.observereObstacles();
+                kayak.observeObstacles();
                 infoLabel.update();
+                State currentState = new State(kayak);
                 updateMap();
                 repaint();
-
+                Agent agent = kayak.getAgent();
+                agent.act(currentState);
                 if(isCollision()){
+                    agent.atTerminalState(currentState);
                     stopSimulation();
                 }
 
@@ -156,6 +168,49 @@ public class Map extends JPanel{
                 g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY()+TILE_SIZE);
             }
         }
+
+        //info printing
+        int x = X_TILES_COUNT * TILE_SIZE + 10;
+        g.drawRect(x, 10, 300, 400);
+        Agent agent = kayak.getAgent();
+        int y = 30; int dy = 15;
+        String txt = "Params:";
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "aplha = " + Float.toString(agent.alpha);
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "epsilon = " + Float.toString(agent.epsilon);
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "gamma = " + Float.toString(agent.gamma);
+        g.drawString(txt, x + 10, y); y += dy + 10;
+
+        txt = "Features:";
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "f0: distance to left shore = " + Integer.toString(kayak.distanceToLeftShore());
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "f1: distance to right shore = " + Integer.toString(kayak.distanceToRightShore());
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "f2: distance to left obstacle = " + Integer.toString(kayak.distanceToRockLeft());
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "f3: distance to right obstacle = " + Integer.toString(kayak.distanceToRockRight());
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "f4: distance to obstacle ahead = " + Integer.toString(kayak.distanceToRockAhead());
+        g.drawString(txt, x + 10, y); y += dy + 10;
+
+        ArrayList<Float> weights = agent.getWeights();
+        for (int i = 0; i <weights.size(); i++){
+            txt = "w" + Integer.toString(i) + " = " + weights.get(i);
+            g.drawString(txt, x + 10, y); y += dy;
+        }
+
+        txt = "episodeRewards = " + Float.toString(agent.episodeRewards);
+        g.drawString(txt, x + 10, y+5); y += dy+10;
+
+        txt = "episodes so far = " + Integer.toString(agent.episodesSoFar);
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "total train rewards = " + Float.toString(agent.totalTrainRewards);
+        g.drawString(txt, x + 10, y); y += dy;
+        txt = "total test rewards = " + Float.toString(agent.totalTestRewards);
+        g.drawString(txt, x + 10, y); y += dy;
 
     }
 

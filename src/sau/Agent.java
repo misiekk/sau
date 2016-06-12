@@ -6,24 +6,28 @@ import java.util.ArrayList;
  * Created by kasia on 11.06.16.
  */
 public class Agent {
-    float alpha, epsilon, gamma; //learning rate, epsilon, discount rate
-    int numTraining;
+    public float alpha, epsilon, gamma; //learning rate, epsilon, discount rate
+    public int numTraining;
 
     State lastState;
     Action lastAction;
-    float episodeRewards = 0.0f;
-    float totalTrainRewards = 0.0f;
-    float totalTestRewards = 0.0f;
-    int episodesSoFar = 0;
+    public float episodeRewards = 0.0f;
+    public float totalTrainRewards = 0.0f;
+    public float totalTestRewards = 0.0f;
+    public int episodesSoFar = 0;
+    Kayak kayak;
     ArrayList<Float> weights; // feature functions' weight for approximation
-    public Agent(float alpha, float epsilon, float gamma, int numTraining){
+    public Agent(Kayak kayak, float alpha, float epsilon, float gamma, int numTraining){
         this.alpha = alpha;
         this.epsilon = epsilon;
         this.gamma = gamma;
         this.numTraining = numTraining;
+        this.kayak = kayak;
+        initWeights();
     }
 
     private void initWeights(){
+        weights = new ArrayList<Float>();
         for (int i =0 ; i < State.NUM_FEATURES; i++)
             weights.add(0.0f);
     }
@@ -48,24 +52,35 @@ public class Agent {
         }
     }
 
+    public void act(State state){
+        //Action action = getAction(state);
+        //State nextState = doAction(state, action);
+        //observe(nextState);
+    }
+
     public void observe(State state){
         if (lastState != null){
-            float reward = state.getScore() - lastState.getScore();
+            float reward = state.getReward() - lastState.getReward();
             observeTransition(lastState, lastAction, state, reward);
         }
     }
-    private void observeTransition(State state, Action action, State nextState, float deltaReward){
+    protected void observeTransition(State state, Action action, State nextState, float deltaReward){
         episodeRewards += deltaReward;
         update(state, action, nextState, deltaReward);
     }
 
     //updates the approximation weights based on transition
-    private void update(State state, Action action, State nextState, float deltaReward){
-
+    protected void update(State state, Action action, State nextState, float deltaReward){
+        float error = nextState.getReward() + gamma * getMaxQValue(nextState) - getQValue(state, action);
+        for (int i = 0; i < weights.size(); i++){
+            Float w = weights.get(i);
+            weights.set(i, w + alpha * error * state.getFeatures().get(i));
+        }
     }
+
     public void atTerminalState(State state){
-        float deltaReward = state.getScore() - lastState.getScore();
-        observeTransition(lastState, lastAction, state, deltaReward);
+       // float deltaReward = state.getReward() - lastState.getReward();
+        //observeTransition(lastState, lastAction, state, deltaReward);
         stopEpisode();
 
         if(!isInTraining())
@@ -75,47 +90,77 @@ public class Agent {
         return (episodesSoFar < numTraining);
     }
 
-    void doAction(State state, Action action){
+    private State doAction(State state, Action action){
         lastState = state;
         lastAction = action;
+        kayak.doAction(action);
+        return new State(kayak);
     }
 
-    /*
     //the best action to take in the state given by the policy
-    Action getPolicy(State state){
-        Action action = new Action();
+    protected Action getPolicy(State state, ArrayList<Action> legalActions){
+        Action action = null;
         return  action;
-    }*/
+    }
 
     //choose an action and return it
-    Action getAction(State state){
-        Action action = getBestAction(state);
+    protected Action getAction(State state){
+        ArrayList<Action> legalActions = state.getLegalActions();
+        Action action = legalActions.get(1);
+        //get random numer
+        //if bigger than epsilon
+        //then choose argmax Q(s,a');
+        action = getBestAction(state);
+        //otherwise explore and pick a random action
         return action;
     }
 
-    /*return 0 if that state has never been seen
+    /*return 0 if that state is terminal
       returns w*feature vector otherwise */
-    float getQValue(State state, Action action){
-        float qValue = 0;
+    protected float getQValue(State state, Action action){
         //simulate performing action and going from state to nextState
-        State nextState = null; // TODO what here???????????????
-
+        kayak.doAction(action);
+        kayak.moveDown(); //simulate obstacles getting closer
+        State nextState = new State(kayak);
+        kayak.moveUp(); //undo simulation
+        if (nextState.getReward() < 0)
+            return 0;
+        float qValue = nextState.getValue(weights);
         return qValue;
     }
 
     /* returns max_action Q(state, action) over legal actions
         If there are no legal actions (e.g. at the terminal state, returns 0.0*/
     float getMaxQValue(State state){
-       float value = 0;
-
-       return value;
+        if (state.getReward() < 0) //terminal state: died
+            return 0;
+        float maxQValue = 0;
+        //for each legal action, take it and calc QValue
+        for (Action action : state.getLegalActions()){
+            float qValue = getQValue(state, action);
+            if (qValue > maxQValue) {
+                maxQValue = qValue;
+                //bestAction.direction = action.direction;
+            }
+        }
+       return maxQValue;
     }
 
     /* returns the best action to take in a state.
        returns null if there are no legal actions */
-    Action getBestAction(State state){
-        Action bestAction = null;
+    Action getBestAction(State state) {
+        if (state.getReward() < 0) //terminal state: died
+            return null; //TODO check this??
+        Action bestAction = new Action(Action.STRAIGHT);
         ArrayList<Action> legalActions = state.getLegalActions();
+        float maxQValue = 0;
+        for (Action action : state.getLegalActions()) {
+            float qValue = getQValue(state, action);
+            if (qValue > maxQValue) {
+                maxQValue = qValue;
+                bestAction.direction = action.direction;
+            }
+        }
         return bestAction;
     }
 

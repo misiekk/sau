@@ -19,6 +19,7 @@ public class Kayak extends Tile {
     private int rockLeft;
     private int rockRight;
     private int rockStraight;
+    private Agent agent;
 
     Kayak(int _indX, int _indY, Map m) {
         this.map = m;
@@ -167,11 +168,11 @@ public class Kayak extends Tile {
         return tiles.get(0).getIndX() + 1;
     }
 
-    public void observereObstacles() {
-        rockStraight = Integer.MAX_VALUE;
-        rockLeft = Integer.MAX_VALUE;
-        rockRight = Integer.MAX_VALUE;
+    public void observeObstacles() {
         Tile originTile = tiles.get(0);
+        rockStraight = Integer.MAX_VALUE;
+        rockLeft = originTile.getIndX() + 1;
+        rockRight = Map.X_TILES_COUNT - originTile.getIndX() - KAYAK_WIDTH;
 
         //check straight ahead
         for (int indY = originTile.getIndY() + KAYAK_HEIGHT; indY < Map.Y_TILES_COUNT; indY++) {
@@ -240,5 +241,13 @@ public class Kayak extends Tile {
 
     public  int distanceToRockRight(){
         return rockRight;
+    }
+
+    public Agent getAgent(){
+        return agent;
+    }
+
+    public void setAgent(Agent agent){
+        this.agent = agent;
     }
 }
