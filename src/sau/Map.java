@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import static sau.Tile.STATUS_COLLISION;
 import static sau.Tile.STATUS_KAYAK;
@@ -75,8 +76,12 @@ public class Map extends JPanel{
                 }
 
             }
+
         });
+        //timer.setRepeats(false);
         timer.start();
+
+        System.out.println("Timer started!");
     }
 
     public void stopSimulation(){
