@@ -10,8 +10,8 @@ import static sau.Kayak.KAYAK_HEIGHT;
 import static sau.Kayak.KAYAK_WIDTH;
 
 public class Map extends JPanel{
-    static final public int X_TILES_COUNT = 20;
-    static final public int Y_TILES_COUNT = 50;
+    static final public int X_TILES_COUNT = 5;
+    static final public int Y_TILES_COUNT = 20;
     static final public int TILE_SIZE = 10;  // tile = TILE_SIZE x TILE_SIZE px
     static final private int TIMER_DELAY = 100;  // timer delay to set in ms
 
@@ -27,7 +27,7 @@ public class Map extends JPanel{
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
-        kayak = new Kayak(5, 7, this);  //TODO kayak initial position
+        kayak = new Kayak(0, 7, this);  //TODO kayak initial position
         generator = new ObstacleGenerator(this);
         this.infoLabel = info;
         //showMap();
@@ -42,7 +42,11 @@ public class Map extends JPanel{
                 generator.update();
                 repaint();
                 infoLabel.update();
-                //showInfo(Tile.STATUS_KAYAK);
+                showInfo(Tile.STATUS_KAYAK);
+
+                if(generator.updateCollision()){
+                    stopSimulation();
+                }
             }
         });
         timer.start();

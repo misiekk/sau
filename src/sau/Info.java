@@ -21,7 +21,7 @@ public class Info extends JLabel {
     }
 
     public void update(){
-        String text = "Status of (5,7) = " + Integer.toString(map.getTileArray()[5][7].getStatus()); //3 kayak, 4 collision, 2 obstacle, 1 free
+        String text = "Status of (5,7) = " + Integer.toString(map.getTileArray()[0][7].getStatus()); //3 kayak, 4 collision, 2 obstacle, 1 free
         setText(text);
     }
 }
