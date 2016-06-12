@@ -12,8 +12,8 @@ import static sau.Kayak.KAYAK_WIDTH;
 public class Map extends JPanel{
     static final public int X_TILES_COUNT = 5;
     static final public int Y_TILES_COUNT = 20;
-    static final public int TILE_SIZE = 10;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 100;  // timer delay to set in ms
+    static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
+    static final private int TIMER_DELAY = 200;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -112,6 +112,14 @@ public class Map extends JPanel{
 
         paintKayak(g);
         paintObstacles(g);
+        g.setColor(Color.BLACK);
+        for(int i=0; i<X_TILES_COUNT; ++i) {
+            for (int j = 0; j < Y_TILES_COUNT; ++j) {
+                Tile tile = tileArray[i][j];
+                g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY());
+            }
+        }
+
     }
 
     /* For debugging purposes */
