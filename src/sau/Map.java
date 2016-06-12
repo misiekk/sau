@@ -15,7 +15,7 @@ public class Map extends JPanel{
     static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 40;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 100;  // timer delay to set in ms
+    static final private int TIMER_DELAY = 2000;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -28,7 +28,7 @@ public class Map extends JPanel{
     private String collisionPlace="";
     private int counter = 0;
     Map() {
-        agent = new Agent(0.8f, 0.3f, 0.1f, 1);
+        agent = new Agent(0.8f, 0.3f, 0.1f, 100);
 //        setStartState();
     }
 
@@ -46,7 +46,7 @@ public class Map extends JPanel{
     public void startSimulation(){
         setStartState();
         kayak.getAgent().startEpisode();
-        kayak.getAgent().observe(new State(kayak)); //observe initial state
+       // kayak.getAgent().observe(new State(kayak)); //observe initial state
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -67,13 +67,13 @@ public class Map extends JPanel{
                 State currentState = new State(kayak);
                 updateMap();
                 repaint();
-                Agent agent = kayak.getAgent();
-                agent.act(currentState);
+               // agent = kayak.getAgent();
                 if(isCollision()){
                     agent.atTerminalState(currentState);
                     counter++;
                     stopSimulation();
                 }
+                agent.act(currentState);
 
             }
 
@@ -135,9 +135,19 @@ public class Map extends JPanel{
     public Tile[][] getTileArray(){ return this.tileArray; }
     private void paintKayak(Graphics g){
         g.setColor(Color.YELLOW);
-
         for(Tile t : kayak.getTiles()){
             g.fillRect(t.getX(), t.getY(), TILE_SIZE, TILE_SIZE);
+           // g.setColor(Color.BLACK);
+           // g.drawString(Integer.toString(t.getY()), t.getX(), t.getY() + TILE_SIZE);
+        }
+
+        g.setColor(Color.BLACK);
+        int index = 0;
+        for (Float q : agent.qvalues){
+            String text = Float.toString(q);
+            Tile tile = kayak.getTiles().get(index);
+            index += Kayak.KAYAK_WIDTH;
+            g.drawString(text, tile.getX(), tile.getY() + TILE_SIZE);
         }
     }
 
@@ -169,7 +179,6 @@ public class Map extends JPanel{
             }
         }
 
-        paintKayak(g);
         paintObstacles(g);
         g.setColor(Color.BLACK);
         for(int i=0; i<X_TILES_COUNT; ++i) {
@@ -178,6 +187,7 @@ public class Map extends JPanel{
                 g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY()+TILE_SIZE);
             }
         }
+        paintKayak(g);
 
         //info printing
         int x = X_TILES_COUNT * TILE_SIZE + 10;

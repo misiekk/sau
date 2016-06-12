@@ -170,7 +170,7 @@ public class Kayak extends Tile {
 
     public void observeObstacles() {
         Tile originTile = tiles.get(0);
-        rockStraight = Integer.MAX_VALUE;
+        rockStraight = Map.Y_TILES_COUNT + 1;
         rockLeft = originTile.getIndX() + 1;
         rockRight = Map.X_TILES_COUNT - originTile.getIndX() - KAYAK_WIDTH;
 

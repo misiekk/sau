@@ -15,6 +15,7 @@ public class Agent {
     public float totalTrainRewards = 0.0f;
     public float totalTestRewards = 0.0f;
     public int episodesSoFar = 0;
+    public ArrayList<Float> qvalues; //for debugging
     Kayak kayak;
     ArrayList<Float> weights; // feature functions' weight for approximation
     public Agent(float alpha, float epsilon, float gamma, int numTraining){
@@ -22,6 +23,8 @@ public class Agent {
         this.epsilon = epsilon;
         this.gamma = gamma;
         this.numTraining = numTraining;
+        this.qvalues = new ArrayList<Float>();
+        qvalues.add(0.0f);  qvalues.add(0.0f);  qvalues.add(0.0f);
         initWeights();
     }
 
@@ -55,9 +58,11 @@ public class Agent {
     }
 
     public void act(State state){
-        //Action action = getAction(state);
-        //State nextState = doAction(state, action);
-        //observe(nextState);
+        Action action = getAction(state);
+        if(action != null) {
+            State nextState = doAction(state, action);
+            observe(nextState);
+        }
     }
 
     public void observe(State state){
@@ -81,8 +86,8 @@ public class Agent {
     }
 
     public void atTerminalState(State state){
-       // float deltaReward = state.getReward() - lastState.getReward();
-        //observeTransition(lastState, lastAction, state, deltaReward);
+        float deltaReward = state.getReward() - lastState.getReward();
+        observeTransition(lastState, lastAction, state, deltaReward);
         stopEpisode();
 
         if(!isInTraining())
@@ -108,7 +113,7 @@ public class Agent {
     //choose an action and return it
     protected Action getAction(State state){
         ArrayList<Action> legalActions = state.getLegalActions();
-        Action action = legalActions.get(1);
+        Action action;
         //get random numer
         //if bigger than epsilon
         //then choose argmax Q(s,a');
@@ -140,6 +145,16 @@ public class Agent {
         //for each legal action, take it and calc QValue
         for (Action action : state.getLegalActions()){
             float qValue = getQValue(state, action);
+
+            //==========debugging================
+            int index = 0;
+            if(action.direction == Action.STRAIGHT)
+                index = 2;
+            else if (action.direction == Action.RIGHT)
+                index = 1;
+            qvalues.set(index, qValue);
+            //==========end of debugging===========
+
             if (qValue > maxQValue) {
                 maxQValue = qValue;
                 //bestAction.direction = action.direction;
