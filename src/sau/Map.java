@@ -11,10 +11,10 @@ import static sau.Tile.STATUS_KAYAK;
 import static sau.Tile.STATUS_OBSTACLE;
 
 public class Map extends JPanel{
-    static final public int X_TILES_COUNT = 20;
+    static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 40;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 200;  // timer delay to set in ms
+    static final private int TIMER_DELAY = 100;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -28,7 +28,7 @@ public class Map extends JPanel{
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
-        kayak = new Kayak(0, 0, this);  //TODO kayak initial position
+        kayak = new Kayak(3, 0, this);  //TODO kayak initial position
         generator = new ObstacleGenerator(this);
         this.infoLabel = info;
         //showMap();
@@ -39,7 +39,7 @@ public class Map extends JPanel{
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(direction){          // Wahadelko
+               /* if(direction){          // Wahadelko
                     if(!kayak.moveRight()){
                         direction = false;
                     }
@@ -48,9 +48,10 @@ public class Map extends JPanel{
                     if(!kayak.moveLeft()){
                         direction = true;
                     }
-                }
+                }*/
 
                 generator.update();
+                kayak.observereObstacles();
                 infoLabel.update();
                 updateMap();
                 repaint();

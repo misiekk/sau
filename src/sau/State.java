@@ -10,8 +10,15 @@ public class State {
     private Map map;
     private final int stayingAliveValue = 1;
     private final int dyingPenalty = - 1000;
+    private int shoreLeft;
+    private int shoreRight;
+    private int rockLeft;
+    private int rockRight;
+    private int rockStraight;
+
     public State(Map map){
-        this.map = map;
+        this.shoreLeft = map.getKayak().distanceToLeftShore();
+        this.shoreRight = map.getKayak().distanceToRightShore();
     }
 
     public ArrayList<Action> getLegalActions(){

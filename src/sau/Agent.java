@@ -114,7 +114,7 @@ public class Agent {
     /* returns the best action to take in a state.
        returns null if there are no legal actions */
     Action getBestAction(State state){
-        Action bestAction = new Action();
+        Action bestAction = null;
         ArrayList<Action> legalActions = state.getLegalActions();
         return bestAction;
     }
