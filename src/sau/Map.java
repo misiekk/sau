@@ -15,7 +15,7 @@ public class Map extends JPanel{
     static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 40;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 2000;  // timer delay to set in ms
+    static final private int TIMER_DELAY = 200;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;

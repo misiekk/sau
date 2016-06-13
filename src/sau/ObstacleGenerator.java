@@ -16,7 +16,7 @@ public class ObstacleGenerator {
 
     ObstacleGenerator(Map _m){
         this.map = _m;
-        this.freq = 0;
+        this.freq = FREQ_COUNTER + MAX_OBSTACLE_HEIGHT;
     }
 
     /* Method moves up all the obstacles and removes elements which are out of the map */
