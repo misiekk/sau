@@ -1,5 +1,6 @@
 package sau;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 /**
  * Created by kasia on 11.06.16.
@@ -28,8 +29,39 @@ public class State {
         this.legalActions = kayak.getLegalActions();
     }
 
+    public State(State lastState, Action action){
+        features = new ArrayList<Integer>();
+        ArrayList<Integer> mask = new ArrayList<>(Collections.nCopies(5, 0));
+        mask.set(ROCK_AHEAD, -1);
+        if(action.direction == Action.LEFT){
+            mask.set(SHORE_LEFT, -1);
+            mask.set(SHORE_RIGHT, 1);
+            mask.set(ROCK_LEFT, -1);
+            mask.set(ROCK_RIGHT, 1);
+        }
+        else if(action.direction == Action.RIGHT){
+            mask.set(SHORE_LEFT, 1);
+            mask.set(SHORE_RIGHT, -1);
+            mask.set(ROCK_LEFT, 1);
+            mask.set(ROCK_RIGHT, -1);
+        }
+
+        features.add(lastState.getShoreLeft()+mask.get(SHORE_LEFT));
+        features.add(lastState.getShoreRight()+mask.get(SHORE_RIGHT));
+        features.add(lastState.getRockLeft() + mask.get(ROCK_LEFT));
+        features.add(lastState.getRockRight() + mask.get(ROCK_RIGHT));
+        features.add(lastState.getRockAhead() + mask.get(ROCK_AHEAD));
+    }
+
     public ArrayList<Action> getLegalActions(){
-        return legalActions;
+        ArrayList<Action> actions = new ArrayList<>();
+        if(features.get(SHORE_LEFT) > 0)
+            actions.add(new Action(Action.LEFT));
+        if(features.get(SHORE_RIGHT) > 0)
+            actions.add(new Action(Action.RIGHT));
+        actions.add(new Action(Action.STRAIGHT));
+        return actions;
+        //return legalActions;
     }
 
     public int getReward(){

@@ -84,7 +84,7 @@ public class Kayak extends Tile {
             t.setIndX(t.getIndX() + 1);
         }
         calculateXY();
-
+        map.updateMap();
         return true;
     }
 
@@ -99,6 +99,7 @@ public class Kayak extends Tile {
             t.setIndX(t.getIndX() - 1);
         }
         calculateXY();
+        map.updateMap();
         return true;
     }
 

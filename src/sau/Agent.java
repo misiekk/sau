@@ -68,7 +68,7 @@ public class Agent {
 
     protected void observe(State state){
         if (lastState != null){
-            float reward = state.getReward() - lastState.getReward();
+            float reward = state.getReward();// - lastState.getReward();
             observeTransition(lastState, lastAction, state, reward);
         }
     }
@@ -79,15 +79,18 @@ public class Agent {
 
     //updates the approximation weights based on transition
     protected void update(State state, Action action, State nextState, float deltaReward){
-        float error = deltaReward + gamma * getMaxQValue(nextState) - getQValue(state, action);
+        float maxNext = getMaxQValue(nextState);
+        float currentQ = getQValue(state, action);
+        float error = deltaReward + gamma * maxNext - getQValue(state, action);
         for (int i = 0; i < weights.size(); i++){
             Float w = weights.get(i);
-            weights.set(i, w + alpha * error * state.getFeatures().get(i));
+            weights.set(i, w + alpha * error * nextState.getFeatures().get(i));
         }
     }
 
     public void atTerminalState(State state){
-        float deltaReward = state.getReward() - lastState.getReward();
+        //float deltaReward = state.getReward() - lastState.getReward();
+        float deltaReward = state.getReward();
         observeTransition(lastState, lastAction, state, deltaReward);
         stopEpisode();
 
@@ -130,14 +133,18 @@ public class Agent {
       returns w*feature vector otherwise */
     protected float getQValue(State state, Action action){
         //simulate performing action and going from state to nextState
-        kayak.doAction(action);
+      /*  kayak.doAction(action);
         kayak.moveDown(); //simulate obstacles getting closer
+        kayak.observeObstacles();
         State nextState = new State(kayak);
         kayak.moveUp(); //undo simulation
+        kayak.observeObstacles();
         if (nextState.getReward() < 0)
             return 0;
         float qValue = nextState.getValue(weights);
-        return qValue;
+        return qValue;*/
+        State nextState = new State(state, action);
+        return nextState.getValue(weights);
     }
 
     /* returns max_action Q(state, action) over legal actions
