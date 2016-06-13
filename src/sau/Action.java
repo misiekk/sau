@@ -11,5 +11,11 @@ public class Action {
     public Action(Integer direction){
         this.direction = direction;
     }
-
+    public String print(){
+        if(direction == LEFT)
+            return "left";
+        if(direction == RIGHT)
+            return "right";
+        return "straight";
+    }
 }

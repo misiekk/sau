@@ -1,6 +1,7 @@
 package sau;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by kasia on 11.06.16.
@@ -65,7 +66,7 @@ public class Agent {
         }
     }
 
-    public void observe(State state){
+    protected void observe(State state){
         if (lastState != null){
             float reward = state.getReward() - lastState.getReward();
             observeTransition(lastState, lastAction, state, reward);
@@ -78,7 +79,7 @@ public class Agent {
 
     //updates the approximation weights based on transition
     protected void update(State state, Action action, State nextState, float deltaReward){
-        float error = nextState.getReward() + gamma * getMaxQValue(nextState) - getQValue(state, action);
+        float error = deltaReward + gamma * getMaxQValue(nextState) - getQValue(state, action);
         for (int i = 0; i < weights.size(); i++){
             Float w = weights.get(i);
             weights.set(i, w + alpha * error * state.getFeatures().get(i));
@@ -117,9 +118,12 @@ public class Agent {
         //get random numer
         //if bigger than epsilon
         //then choose argmax Q(s,a');
-        action = getBestAction(state);
+        //action = getBestAction(state);
         //otherwise explore and pick a random action
-        return action;
+        Random rand = new Random();
+        int index = rand.nextInt(legalActions.size());
+        return legalActions.get(index);
+
     }
 
     /*return 0 if that state is terminal

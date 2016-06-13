@@ -33,7 +33,7 @@ public class GUI extends javax.swing.JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         setContentPane(this.panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(Map.X_TILES_COUNT*Map.TILE_SIZE +2*Map.Y_TILES_COUNT + 300, Map.Y_TILES_COUNT *Map.TILE_SIZE +2*Map.X_TILES_COUNT + 10));
+        setPreferredSize(new Dimension(Map.X_TILES_COUNT*Map.TILE_SIZE +2*Map.Y_TILES_COUNT + 300, Map.Y_TILES_COUNT *Map.TILE_SIZE +2*Map.X_TILES_COUNT + 100));
         pack();
 
 /*        startSimulationButton.addActionListener(new ActionListener() {
