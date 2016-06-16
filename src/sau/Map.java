@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
 import static sau.Tile.STATUS_COLLISION;
@@ -12,10 +13,14 @@ import static sau.Tile.STATUS_KAYAK;
 import static sau.Tile.STATUS_OBSTACLE;
 
 public class Map extends JPanel{
+    static final float ALPHA = 0.2f;
+    static final float GAMMA = 0.9f;
+    static final float EPSILON = 1.0f;
+    static final int NUM_TRAINING = 100;
     static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 20;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 800;  // timer delay to set in ms
+    static final private int TIMER_DELAY = 100;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -28,7 +33,7 @@ public class Map extends JPanel{
     private String collisionPlace="";
     private int counter = 0;
     Map() {
-        agent = new Agent(0.8f, 0.3f, 0.1f, 100);
+        agent = new Agent(ALPHA, EPSILON, GAMMA, NUM_TRAINING);
 //        setStartState();
     }
 
@@ -46,7 +51,6 @@ public class Map extends JPanel{
     public void startSimulation(){
         setStartState();
         kayak.getAgent().startEpisode();
-       // kayak.getAgent().observe(new State(kayak)); //observe initial state
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -63,17 +67,18 @@ public class Map extends JPanel{
 
                 generator.update();
                 kayak.observeObstacles();
-                //infoLabel.update();
                 State currentState = new State(kayak);
-                updateMap();
                 repaint();
-               // agent = kayak.getAgent();
                 if(isCollision()){
                     agent.atTerminalState(currentState);
                     counter++;
+                    updateMap();
                     stopSimulation();
                 }
-                agent.act(currentState);
+                else
+                    agent.act(currentState);
+                updateMap();
+
 
             }
 
@@ -82,6 +87,8 @@ public class Map extends JPanel{
         timer.start();
 
         System.out.println("Timer started!");
+        //Scanner scan = new Scanner(System.in);
+        //int debug = scan.nextInt();
     }
 
     public void stopSimulation(){

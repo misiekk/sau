@@ -6,7 +6,7 @@ import java.util.List;
  * Created by kasia on 11.06.16.
  */
 public class State {
-    public static final int NUM_FEATURES = 5;
+    public static final int NUM_FEATURES = 6;
     //private Tile[][] tiles;
     private Map map;
     private final int stayingAliveValue = 1;
@@ -16,7 +16,9 @@ public class State {
     private final int ROCK_LEFT = 2;
     private final int ROCK_RIGHT = 3;
     private final int ROCK_AHEAD = 4;
+    private final int POLARIZATION = 5;
     private ArrayList<Integer> features;
+    private ArrayList<Float> normalizedFeatures = new ArrayList<>(Collections.nCopies(6, 0.0f));
     private ArrayList<Action> legalActions;
 
     public State(Kayak kayak){
@@ -26,24 +28,38 @@ public class State {
         features.add(kayak.distanceToRockLeft());
         features.add(kayak.distanceToRockRight());
         features.add(kayak.distanceToRockAhead());
-        this.legalActions = kayak.getLegalActions();
+        features.add(1);
+        normalizeFeatures();
+        //this.legalActions = kayak.getLegalActions();
     }
 
     public State(State lastState, Action action){
         features = new ArrayList<Integer>();
         ArrayList<Integer> mask = new ArrayList<>(Collections.nCopies(5, 0));
-        mask.set(ROCK_AHEAD, -1);
+        if(lastState.getFeatures().get(ROCK_AHEAD) < Map.Y_TILES_COUNT)
+            mask.set(ROCK_AHEAD, -1);
+        else
+            mask.set(ROCK_AHEAD, 0);
+
         if(action.direction == Action.LEFT){
             mask.set(SHORE_LEFT, -1);
             mask.set(SHORE_RIGHT, 1);
-            mask.set(ROCK_LEFT, -1);
+            if(lastState.getRockLeft() > 0)
+                mask.set(ROCK_LEFT, -1);
+            else
+                mask.set(ROCK_LEFT, -0);
             mask.set(ROCK_RIGHT, 1);
         }
         else if(action.direction == Action.RIGHT){
             mask.set(SHORE_LEFT, 1);
             mask.set(SHORE_RIGHT, -1);
+
             mask.set(ROCK_LEFT, 1);
-            mask.set(ROCK_RIGHT, -1);
+            if (lastState.getRockLeft() > 0)
+                mask.set(ROCK_RIGHT, -1);
+            else
+                mask.set(ROCK_RIGHT, 0);
+
         }
 
         features.add(lastState.getShoreLeft()+mask.get(SHORE_LEFT));
@@ -51,6 +67,18 @@ public class State {
         features.add(lastState.getRockLeft() + mask.get(ROCK_LEFT));
         features.add(lastState.getRockRight() + mask.get(ROCK_RIGHT));
         features.add(lastState.getRockAhead() + mask.get(ROCK_AHEAD));
+        features.add(1);//polarization
+        normalizeFeatures();
+    }
+
+    private void normalizeFeatures(){
+        for (int i = 0; i < 4; i++){
+            float value = features.get(i)/(Map.X_TILES_COUNT - Kayak.KAYAK_WIDTH + 1);
+            normalizedFeatures.set(i, value);
+        }
+        float rockAheadNormalized = features.get(ROCK_AHEAD)/ (Map.Y_TILES_COUNT - Kayak.KAYAK_HEIGHT + 1);
+        normalizedFeatures.set(ROCK_AHEAD, rockAheadNormalized);
+        normalizedFeatures.set(POLARIZATION, 1.0f);
     }
 
     public ArrayList<Action> getLegalActions(){
@@ -73,7 +101,7 @@ public class State {
     public float getValue(ArrayList<Float> weights){
         float score = 0;
         for (int i = 0; i<weights.size(); i++)
-            score+=weights.get(i)*features.get(i);
+            score+=weights.get(i)*normalizedFeatures.get(i);
 
         return score;
     }

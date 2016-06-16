@@ -173,7 +173,7 @@ public class Kayak extends Tile {
         Tile originTile = tiles.get(0);
         rockStraight = Map.Y_TILES_COUNT + 1;
         rockLeft = originTile.getIndX() + 1;
-        rockRight = Map.X_TILES_COUNT - originTile.getIndX() - KAYAK_WIDTH;
+        rockRight = Map.X_TILES_COUNT - originTile.getIndX() - KAYAK_WIDTH + 1;
 
         //check straight ahead
         for (int indY = originTile.getIndY() + KAYAK_HEIGHT; indY < Map.Y_TILES_COUNT; indY++) {

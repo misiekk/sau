@@ -10,6 +10,7 @@ public class Agent {
     public float alpha, epsilon, gamma; //learning rate, epsilon, discount rate
     public int numTraining;
 
+    int seed = 1;
     State lastState;
     Action lastAction;
     public float episodeRewards = 0.0f;
@@ -42,6 +43,7 @@ public class Agent {
         lastState = null;
         lastAction = null;
         episodeRewards = 0.0f;
+        seed = 1;
     }
 
     public void stopEpisode(){
@@ -67,8 +69,11 @@ public class Agent {
     }
 
     protected void observe(State state){
+        int debug;
         if (lastState != null){
             float reward = state.getReward();// - lastState.getReward();
+            if(reward < 0)
+                debug = 1;
             observeTransition(lastState, lastAction, state, reward);
         }
     }
@@ -81,10 +86,12 @@ public class Agent {
     protected void update(State state, Action action, State nextState, float deltaReward){
         float maxNext = getMaxQValue(nextState);
         float currentQ = getQValue(state, action);
-        float error = deltaReward + gamma * maxNext - getQValue(state, action);
+        float error = deltaReward + gamma * maxNext - currentQ;
+        int temp = 0;
         for (int i = 0; i < weights.size(); i++){
             Float w = weights.get(i);
-            weights.set(i, w + alpha * error * nextState.getFeatures().get(i));
+            int f = nextState.getFeatures().get(i);
+            weights.set(i, w + alpha * error * f);
         }
     }
 
@@ -105,7 +112,8 @@ public class Agent {
         lastState = state;
         lastAction = action;
         kayak.doAction(action);
-        return new State(kayak);
+        return new State(state, action);
+        //return new State(kayak);
     }
 
     //the best action to take in the state given by the policy
@@ -123,7 +131,9 @@ public class Agent {
         //then choose argmax Q(s,a');
         //action = getBestAction(state);
         //otherwise explore and pick a random action
+
         Random rand = new Random();
+//        Random rand = new Random(seed++);
         int index = rand.nextInt(legalActions.size());
         return legalActions.get(index);
 
@@ -168,7 +178,6 @@ public class Agent {
 
             if (qValue > maxQValue) {
                 maxQValue = qValue;
-                //bestAction.direction = action.direction;
             }
         }
        return maxQValue;
