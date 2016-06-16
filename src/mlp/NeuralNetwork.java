@@ -87,7 +87,7 @@ public class NeuralNetwork implements Cloneable {
 
 
     /**
-     * Backward propagation function. Adjusts NN weights
+     * Backward propagation function. Adjusts the MLP's weights
      * @param input input table (values between 0 and 1)
      * @param output expected output table (values between 0 and 1)
      * @return delta error between generated and expected output
@@ -153,7 +153,6 @@ public class NeuralNetwork implements Cloneable {
         return true;
     }
 
-
     /**
      * Load an MLP from file
      * @param path path to saved MLP
@@ -172,8 +171,6 @@ public class NeuralNetwork implements Cloneable {
             return null;
         }
     }
-
-
 
     /**
      * @return Learning rate
