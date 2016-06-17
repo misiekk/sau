@@ -6,29 +6,58 @@ import java.util.List;
  * Created by kasia on 11.06.16.
  */
 public class State {
+    private final int stayingAliveValue = 1;
+    private final int dyingPenalty = -1000;
+    private ArrayList<Double> environment;
+    public ArrayList<Integer> kayakPositions;
+    //public boolean isTerminal = false;
+
+    public double[] getFeatures(Action action) {
+        double features[] = new double[environment.size() + 2]; //2 = action + polarization
+        int i;
+        for (i = 0; i < environment.size(); i++)
+            features[i] = environment.get(i);
+        features[i] = action.direction * 1.0 / Action.ACTIONS_NUM; //normalize action
+        return features;
+    }
+
+    public State(final int[][] board) {
+        environment = new ArrayList<>(Map.X_TILES_COUNT * Map.Y_TILES_COUNT);
+        //prepare normalized values of the board
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board[0].length; j++)
+                environment.add(1.0 * board[i][j] / Tile.STATUS_NUM);
+        setKayakPositions(environment); // not needed here?
+    }
+
+    public State(State state, Action action){
+        setKayakPositions(state.environment);
+        environment = new ArrayList<>(state.environment.size());
+        //TODO simulate performing action in State state and calculate environment
+    }
+
+    private void setKayakPositions(ArrayList<Double> environment){
+        kayakPositions = new ArrayList<>();
+        for(int i = 0; i < environment.size(); i++)
+            if(environment.get(i) * Tile.STATUS_NUM * 1.0 == Tile.STATUS_KAYAK)
+                kayakPositions.add(i);
+    }
+
+}
+    //old logic
+/*
     public static final int NUM_FEATURES = 6;
     //private Tile[][] tiles;
     private Map map;
-    private final int stayingAliveValue = 1;
-    private final int dyingPenalty = - 1000;
     private final int SHORE_LEFT = 0;
     private final int SHORE_RIGHT = 1;
     private final int ROCK_LEFT = 2;
     private final int ROCK_RIGHT = 3;
     private final int ROCK_AHEAD = 4;
     private final int POLARIZATION = 5;
-    private ArrayList<Integer> features;
+    // private ArrayList<Integer> features;
     private ArrayList<Float> normalizedFeatures = new ArrayList<>(Collections.nCopies(6, 0.0f));
     private ArrayList<Action> legalActions;
-
-    public double[] getFeatures(Action action){ //TODO return table of map tiles + action + 1 for bias
-        return  null;
-    }
-
-
-
-
-    //old logic
 
     public State(Kayak kayak){
         features = new ArrayList<Integer>();
@@ -140,7 +169,7 @@ public class State {
     }
 
 
-}
+}*/
 
 /* Features:
     shoreLeft - x distance from Kayak to the left shore (left on the screen, not left for the kayak)

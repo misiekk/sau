@@ -69,7 +69,7 @@ public class Map extends JPanel{
                 kayak.observeObstacles();
                 State currentState = new State(kayak);
                 repaint();
-                if(isCollision()){
+                if(collisionOccurred()){
                     agent.atTerminalState(currentState);
                     counter++;
                     updateMap();
@@ -98,7 +98,7 @@ public class Map extends JPanel{
 
     }
     /* Returns true if kayak hit the obstacle */
-    private boolean isCollision(){
+    private boolean collisionOccurred(){
         for(int i=0; i<X_TILES_COUNT; ++i){
             for(int j = 0; j< Y_TILES_COUNT; ++j) {
                 if(this.tileArray[i][j].getStatus() == STATUS_COLLISION){
