@@ -21,6 +21,15 @@ public class State {
     private ArrayList<Float> normalizedFeatures = new ArrayList<>(Collections.nCopies(6, 0.0f));
     private ArrayList<Action> legalActions;
 
+    public double[] getFeatures(Action action){ //TODO return table of map tiles + action + 1 for bias
+        return  null;
+    }
+
+
+
+
+    //old logic
+
     public State(Kayak kayak){
         features = new ArrayList<Integer>();
         features.add(kayak.distanceToLeftShore());
@@ -125,9 +134,11 @@ public class State {
         return features.get(ROCK_AHEAD);
     }
 
+
     public ArrayList<Integer> getFeatures(){
         return  features;
     }
+
 
 }
 
