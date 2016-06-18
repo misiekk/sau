@@ -22,10 +22,12 @@ public class State {
         for (i = 0; i < environment.size(); i++)
             features[i] = environment.get(i);
         features[i] = action.direction * 1.0 / Action.ACTIONS_NUM; //normalize action*/
-        double features[] = new double[statusBoard.length + 1]; //1 for bias
+        int index = 1;
+        double features[] = new double[statusBoard.length * statusBoard[0].length + 1]; //1 for bias
         for(int i = 0; i < statusBoard.length; i++)
-            for (int j = 0; i< statusBoard[0].length; j++)
-                features[i * Map.X_TILES_COUNT + j] = statusBoard[i][j]*1.0/Tile.STATUS_NUM;
+            for (int j = 0; j < statusBoard[0].length; j++) {
+                features[i * Map.X_TILES_COUNT + j] = statusBoard[i][j] * 1.0 / Tile.STATUS_NUM;
+            }
 
         features[statusBoard.length] = 1; // bias
         return features;

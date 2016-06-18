@@ -50,12 +50,15 @@ public class NeuralNetwork implements Cloneable {
             layers[0].neurons.get(i).value = input[i];
 
 
+        int debug = 0;
         // Approximate: hidden layers + output layers
         for(k = 1; k < layers.length; k++) {
             for (i = 0; i < layers[k].size; i++) {
                 newValue = 0.0;
-                for (j = 0; j < layers[k - 1].size; j++)
+                for (j = 0; j < layers[k - 1].size; j++) {
+
                     newValue += layers[k].neurons.get(i).weights[j] * layers[k - 1].neurons.get(j).value;
+                }
 
                 newValue += layers[k].neurons.get(i).bias;
                 layers[k].neurons.get(i).value = transferFunction.evaluate(newValue);
@@ -113,7 +116,9 @@ public class NeuralNetwork implements Cloneable {
         }
 
         return 0; // TODO return value needed?
+
     }
+
 
 
     /**
