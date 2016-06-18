@@ -83,10 +83,10 @@ public class Agent {
     public Action chooseAction(State state){ //TODO choose not only randomly
         ArrayList<Action> legalActions = state.getLegalActions();
         Action action;
-        //get random numer
-        //if bigger than epsilon
+        //get random numer. if bigger than epsilon
         //then choose argmax Q(s,a');
         //action = getBestAction(state);
+
         //otherwise explore and pick a random action
         Random rand = new Random();
         //Random rand = new Random(seed++);
@@ -140,6 +140,17 @@ public class Agent {
         }
         return maxQValue;
     }*/
+    protected Action getBestAction(State state){
+        double[] actionValues = NN.getOutput(state.getFeatures());
+        ArrayList<Double> actionValuesList = new ArrayList(Arrays.asList(actionValues));
+        double maxActionVal = Collections.max(actionValuesList);
+        int actionIndex = 0;
+        for (int i = 0; i < actionValues.length; i++)
+            if(actionValues[i] == maxActionVal)
+                actionIndex = i;
+
+        return new Action(actionIndex);
+    }
 
     public void atTerminalState(State prevState, Action action, State state){
         observeTransition(prevState, action, state);
