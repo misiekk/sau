@@ -16,7 +16,7 @@ public class NeuralNetwork implements Cloneable {
      *
      * @param layers table with neuron numbers for each layer
      * @param learningRate learning rate (alpha)
-     * @param fun Transfer function
+     * @param fun transfer (activation) function
      */
     public NeuralNetwork(int[] layers, double learningRate, TransferFunction fun)   {
         this.learningRate = learningRate;
@@ -57,7 +57,7 @@ public class NeuralNetwork implements Cloneable {
                 for (j = 0; j < layers[k - 1].size; j++)
                     newValue += layers[k].neurons.get(i).weights[j] * layers[k - 1].neurons.get(j).value;
 
-               // newValue += layers[k].neurons.get(i).bias;
+                newValue += layers[k].neurons.get(i).bias;
                 layers[k].neurons.get(i).value = transferFunction.evaluate(newValue);
             }
         }
@@ -70,6 +70,50 @@ public class NeuralNetwork implements Cloneable {
     }
 
 
+    /**
+     * Backward propagation function. Adjusts the MLP's weights
+     * @param target
+     * @param prediction
+     * @return 0
+     */
+    public double backPropagate(double[] target, double[] prediction) {
+        int i, j, k;
+        double error;
+        double globalError[] = new double[3];
+        for (i = 0; i < prediction.length; i++)
+            globalError[i] = Math.pow(target[i] - prediction[i], 2) * 0.5;
+        double localError = 0.0;
+        //double new_output[] = getOutput(input);
+
+        //Calculate output error
+        for(i = 0; i < layers[layers.length - 1].size; i++){
+          //error = Math.pow(target[i] - prediction[i], 2) * 0.5;
+            error = target[i] - prediction[i];
+            layers[layers.length - 1].neurons.get(i).delta = error * transferFunction.evaluateDerivative(prediction[i]);
+        }
+
+
+        for(k = layers.length - 2; k >= 0; k--){
+            // Calculate the error of the current layer and recalculate delta
+            for(i = 0; i < layers[k].size; i++){
+                error = 0.0;
+                for(j = 0; j < layers[k + 1].size; j++)
+                    error += layers[k + 1].neurons.get(j).delta * layers[k + 1].neurons.get(j).weights[i];
+
+                layers[k].neurons.get(i).delta = error * transferFunction.evaluateDerivative(layers[k].neurons.get(i).value);
+            }
+
+            // update the weights of the next layer
+            for(i = 0; i < layers[k + 1].size; i++) {
+                for(j = 0; j < layers[k].size; j++)
+                    layers[k + 1].neurons.get(i).weights[j] += learningRate * layers[k + 1].neurons.get(i).delta *
+                            layers[k].neurons.get(j).value;
+                layers[k + 1].neurons.get(i).bias += learningRate * layers[k + 1].neurons.get(i).delta;
+            }
+        }
+
+        return 0; // TODO return value needed?
+    }
 
     /**
      * Backward propagation function. Adjusts the MLP's weights
@@ -85,7 +129,7 @@ public class NeuralNetwork implements Cloneable {
 
         //Calculate output error
         for(i = 0; i < layers[layers.length - 1].size; i++){
-           // error = output[i] - new_output[i];
+            // error = output[i] - new_output[i];
             layers[layers.length - 1].neurons.get(i).delta = globalError * transferFunction.evaluateDerivative(output[i]); //this was newOutput before
         }
 

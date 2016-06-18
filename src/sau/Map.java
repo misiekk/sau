@@ -1,6 +1,7 @@
 package sau;
 
 import javax.swing.*;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,9 +42,10 @@ public class Map extends JPanel{
         obstaclesList = new ArrayList<Obstacle>();
         tileArray = new Tile[X_TILES_COUNT][Y_TILES_COUNT];
         initTileList();
-        kayak = new Kayak(3, 0, this);  //TODO kayak initial position
+        //kayak = new Kayak(3, 0, this);  //TODO kayak initial position
+        kayak = new Kayak(3,2, Tile.getStatusBoard(tileArray));
         kayak.setAgent(agent);
-        agent.setKayak(kayak);
+       // agent.setKayak(kayak);
         generator = new ObstacleGenerator(this);
         repaint();
 
@@ -64,20 +66,27 @@ public class Map extends JPanel{
                         direction = true;
                     }
                 }*/
-
+                State currentState = new State(Tile.getStatusBoard(tileArray));
+                Action action = agent.chooseAction(currentState);
+                kayak.doAction(action);
                 generator.update();
-                kayak.observeObstacles();
-                State currentState = new State(kayak);
+                updateMap();
                 repaint();
+
+                //reinforcement learning:
+                State nextState = new State(Tile.getStatusBoard(tileArray));
                 if(collisionOccurred()){
-                    agent.atTerminalState(currentState);
-                    counter++;
-                    updateMap();
+//                    counter++;
+//                    updateMap();
+                    agent.atTerminalState(currentState, action, nextState);
                     stopSimulation();
                 }
                 else
-                    agent.act(currentState);
-                updateMap();
+                    agent.observeTransition(currentState, action, nextState);
+
+                //            else
+  //                  agent.act(currentState);
+      //          updateMap();
 
 
             }
@@ -150,8 +159,8 @@ public class Map extends JPanel{
 
         g.setColor(Color.BLACK);
         int index = 0;
-        for (Float q : agent.qvalues){
-            String text = Float.toString(q);
+        for (double q : agent.qvalues){
+            String text = Double.toString(q);
             Tile tile = kayak.getTiles().get(index);
             index += Kayak.KAYAK_WIDTH;
             g.drawString(text, tile.getX(), tile.getY() + TILE_SIZE);
@@ -203,11 +212,11 @@ public class Map extends JPanel{
         int y = 30; int dy = 15;
         String txt = "Params:";
         g.drawString(txt, x + 10, y); y += dy;
-        txt = "aplha = " + Float.toString(agent.alpha);
+        txt = "aplha = " + Double.toString(agent.alpha);
         g.drawString(txt, x + 10, y); y += dy;
-        txt = "epsilon = " + Float.toString(agent.epsilon);
+        txt = "epsilon = " + Double.toString(agent.epsilon);
         g.drawString(txt, x + 10, y); y += dy;
-        txt = "gamma = " + Float.toString(agent.gamma);
+        txt = "gamma = " + Double.toString(agent.gamma);
         g.drawString(txt, x + 10, y); y += dy + 10;
 
         txt = "Features:";
@@ -223,11 +232,11 @@ public class Map extends JPanel{
         txt = "f4: distance to obstacle ahead = " + Integer.toString(kayak.distanceToRockAhead());
         g.drawString(txt, x + 10, y); y += dy + 10;
 
-        ArrayList<Float> weights = agent.getWeights();
+      /*  ArrayList<Float> weights = agent.getWeights();
         for (int i = 0; i <weights.size(); i++){
             txt = "w" + Integer.toString(i) + " = " + weights.get(i);
             g.drawString(txt, x + 10, y); y += dy;
-        }
+        }*/
 
         txt = "Last action = " + agent.lastAction.print();
         g.drawString(txt, x + 10, y+5); y += dy+10;

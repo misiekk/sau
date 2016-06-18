@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 public class Layer {
     public ArrayList<Neuron> 	neurons;
-    public int 		size;
+    //public TransferFunction     transferFunction;
+    public int 		            size;
 
     /**
      * Layer of neurons
@@ -13,6 +14,7 @@ public class Layer {
      * @param prevSize number of neurons in the previous layers
      */
     public Layer(int size, int prevSize){
+        //this.transferFunction = transferFunction;
         this.size = size;
         this.neurons = new ArrayList<Neuron>();
 

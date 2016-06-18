@@ -49,4 +49,12 @@ public class Tile {
     public void setOldIndX(int _indX) {this.oldIndX = _indX; }
     public void setOldIndY(int _indY) {this.oldIndY = _indY; }
     public void setStatus(int _status) {this.status = _status; }
+
+    public static int[][] getStatusBoard(Tile[][] tiles){
+        int board[][] = new int[tiles.length][tiles[0].length];
+        for(int i = 0; i < tiles.length; i++)
+            for(int j = 0; j < tiles[0].length; j++)
+                board[i][j] = tiles[i][j].getStatus();
+        return board;
+    }
 }

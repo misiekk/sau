@@ -8,40 +8,106 @@ import java.util.List;
 public class State {
     private final int stayingAliveValue = 1;
     private final int dyingPenalty = -1000;
-    private ArrayList<Double> environment;
+   // private ArrayList<Double> environment;
     public ArrayList<Integer> kayakPositions;
+    public int[][]statusBoard;
+    public Map map;
+    public boolean collision = false;
     //public boolean isTerminal = false;
 
-    public double[] getFeatures(Action action) {
-        double features[] = new double[environment.size() + 2]; //2 = action + polarization
+    public double[] getFeatures() {
+        /*
         int i;
+        double features[] = new double[environment.size() + 2]; //2 = action + polarization
         for (i = 0; i < environment.size(); i++)
             features[i] = environment.get(i);
-        features[i] = action.direction * 1.0 / Action.ACTIONS_NUM; //normalize action
+        features[i] = action.direction * 1.0 / Action.ACTIONS_NUM; //normalize action*/
+        double features[] = new double[statusBoard.length + 1]; //1 for bias
+        for(int i = 0; i < statusBoard.length; i++)
+            for (int j = 0; i< statusBoard[0].length; j++)
+                features[i * Map.X_TILES_COUNT + j] = statusBoard[i][j];
+
+        features[statusBoard.length] = 1; // bias
         return features;
     }
 
-    public State(final int[][] board) {
-        environment = new ArrayList<>(Map.X_TILES_COUNT * Map.Y_TILES_COUNT);
+    public State(int[][] statusBoard) {
+        this.statusBoard = statusBoard;
+       /* environment = new ArrayList<>(Map.X_TILES_COUNT * Map.Y_TILES_COUNT);
         //prepare normalized values of the board
-        for (int i = 0; i < board.length; i++)
-            for (int j = 0; j < board[0].length; j++)
-                environment.add(1.0 * board[i][j] / Tile.STATUS_NUM);
-        setKayakPositions(environment); // not needed here?
+        for (int i = 0; i < map.getTileArray().length; i++)
+            for (int j = 0; j < map.getTileArray()[0].length; j++)
+                environment.add(1.0 * map.getTileArray()[i][j].getStatus() / Tile.STATUS_NUM);*/
+        //setKayakPositions(environment); // not needed here?
+        setKayakPositions();
+        collision = collisionOccurred(statusBoard);
     }
 
-    public State(State state, Action action){
+    private  void setKayakPositions(){
+        kayakPositions = new ArrayList<>();
+        for(int i = 0; i < statusBoard.length; i++)
+            for(int j = 0; j < statusBoard[0].length; j++)
+                if(statusBoard[i][j] == Tile.STATUS_KAYAK)
+                    kayakPositions.add(i * Map.X_TILES_COUNT + j);
+    }
+
+    private boolean collisionOccurred(int[][] statusBoard){
+        for(int i = 0; i < statusBoard.length; i++)
+            for(int j = 0; j < statusBoard[0].length; j++)
+                if(statusBoard[i][j] == Tile.STATUS_COLLISION)
+                    return true;
+        return false;
+    }
+
+    public int getReward(){
+        if(collision)
+            return dyingPenalty;
+        return  stayingAliveValue;
+    }
+
+    public ArrayList<Action> getLegalActions(){
+        ArrayList<Action> legalActions = new ArrayList<>();
+        int columnPos = kayakPositions.get(0) % Map.X_TILES_COUNT;
+
+        if(columnPos != 0)
+            legalActions.add(new Action(Action.LEFT));
+        if(columnPos != Map.X_TILES_COUNT - Kayak.KAYAK_WIDTH)
+            legalActions.add(new Action(Action.RIGHT));
+        legalActions.add(new Action(Action.STRAIGHT));
+
+        return legalActions;
+    }
+    /*public State(State state, Action action){
         setKayakPositions(state.environment);
         environment = new ArrayList<>(state.environment.size());
+        int rowLength = Map.X_TILES_COUNT;
         //TODO simulate performing action in State state and calculate environment
-    }
+        //move kayak to left or right
+        int dx = action.getMapDirection();
+        if(dx < 0) {
+            if (kayakPositions.get(0) / rowLength > 0) { //if kayak is not next to the left shore
 
+            }
+        }
+        for(int i = rowLength; i < state.environment.size(); i++){
+            int indX = i/Map.X_TILES_COUNT;
+            int indY = i - indX * Map.X_TILES_COUNT;
+            //move everything one up
+            environment.set(i - rowLength, environment.get(i));
+        }
+}
     private void setKayakPositions(ArrayList<Double> environment){
         kayakPositions = new ArrayList<>();
         for(int i = 0; i < environment.size(); i++)
             if(environment.get(i) * Tile.STATUS_NUM * 1.0 == Tile.STATUS_KAYAK)
                 kayakPositions.add(i);
     }
+
+    */
+
+
+
+
 
 }
     //old logic

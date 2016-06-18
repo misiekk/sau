@@ -6,24 +6,23 @@ import static sau.Map.TILE_SIZE;
 import static sau.Map.X_TILES_COUNT;
 
 /**
-* Kayak consists of N tiles.
-* Kayak can move only in one axis (left-right).
-*/
+ * Kayak consists of N tiles.
+ * Kayak can move only in one axis (left-right).
+ */
 
-public class Kayak extends Tile {
+public class OldKayak extends Tile {
 
     public static int KAYAK_WIDTH = 2;
     public static int KAYAK_HEIGHT = 5;
     private ArrayList<Tile> tiles;      // list with tiles that define whole kayak
-    //private Map map;
+    private Map map;
     private int rockLeft;
     private int rockRight;
     private int rockStraight;
     private Agent agent;
-    public int[][] statusBoard;
 
-    Kayak(int _indX, int _indY, int[][] statusBoard) {
-        this.statusBoard = statusBoard;
+    OldKayak(int _indX, int _indY, Map m) {
+        this.map = m;
         this.tiles = new ArrayList<>();
         for (int i = 0; i < KAYAK_WIDTH; ++i) {   // x
             for (int j = 0; j < KAYAK_HEIGHT; ++j) {
@@ -73,16 +72,6 @@ public class Kayak extends Tile {
         return idx;
     }
 
-    public void updateStatusBoard(){
-        for (Tile t : tiles){
-            statusBoard[t.getOldIndX()][t.getOldIndY()] = Tile.STATUS_FREE;
-            if(statusBoard[t.getIndX()][t.getIndY()] == Tile.STATUS_OBSTACLE)
-                statusBoard[t.getIndX()][t.getIndY()] = Tile.STATUS_COLLISION;
-            else
-                statusBoard[t.getIndX()][t.getIndY()] = Tile.STATUS_KAYAK;
-        }
-    }
-
     /* Method checks if kayak can move one tile RIGHT, if yes updates all tiles' indexes
      * else returns false and does nothing */
     public boolean moveRight() {
@@ -95,8 +84,7 @@ public class Kayak extends Tile {
             t.setIndX(t.getIndX() + 1);
         }
         calculateXY();
-        updateStatusBoard();
-        //map.updateMap();
+        map.updateMap();
         return true;
     }
 
@@ -111,8 +99,7 @@ public class Kayak extends Tile {
             t.setIndX(t.getIndX() - 1);
         }
         calculateXY();
-        //map.updateMap();
-        updateStatusBoard();
+        map.updateMap();
         return true;
     }
 
@@ -125,7 +112,8 @@ public class Kayak extends Tile {
         }
         calculateXY();
 
-        //map.updateMap();
+        //update map
+        map.updateMap();
         return true;
     }
 
@@ -136,10 +124,10 @@ public class Kayak extends Tile {
             t.setOldIndY(t.getIndY());
             t.setIndY(t.getIndY() + 1);
         }
-        //calculateXY();
+        calculateXY();
 
         //update map
-        //map.updateMap();
+        map.updateMap();
         return true;
     }
 
@@ -181,9 +169,68 @@ public class Kayak extends Tile {
         return tiles.get(0).getIndX() + 1;
     }
 
-   public void observeObstacles(int[][] statusBoard){
-       this.statusBoard = statusBoard;
-   }
+    public void observeObstacles() {
+        Tile originTile = tiles.get(0);
+        rockStraight = Map.Y_TILES_COUNT + 1;
+        rockLeft = originTile.getIndX() + 1;
+        rockRight = Map.X_TILES_COUNT - originTile.getIndX() - KAYAK_WIDTH + 1;
+
+        //check straight ahead
+        for (int indY = originTile.getIndY() + KAYAK_HEIGHT; indY < Map.Y_TILES_COUNT; indY++) {
+            boolean foundObstacle = false;
+            for (int indX = originTile.getIndX(); indX < originTile.getIndX() + KAYAK_WIDTH; indX++) {
+                if (map.getTileArray()[indX][indY].getStatus() == STATUS_OBSTACLE) {
+                    rockStraight = indY - (originTile.getIndY() + KAYAK_HEIGHT);
+                    foundObstacle = true;
+                    break;
+                }
+                if (map.getTileArray()[indX][indY].getStatus() == STATUS_COLLISION) {
+                    rockStraight = 0;
+                    break;
+                }
+            }
+            if (foundObstacle)
+                break;
+        }
+
+        //check left
+        for (int indX = originTile.getIndX(); indX >= 0; indX--) {
+            boolean foundObstacle = false;
+            for (int indY = originTile.getIndY(); indY <= KAYAK_HEIGHT; indY++) {
+                if (map.getTileArray()[indX][indY].getStatus() == STATUS_OBSTACLE) {
+                    rockLeft = originTile.getIndX() - indX;
+                    foundObstacle = true;
+                    break;
+                }
+                if (map.getTileArray()[indX][indY].getStatus() == STATUS_COLLISION) {
+                    rockLeft = 0;
+                    foundObstacle = true;
+                    break;
+                }
+            }
+            if (foundObstacle)
+                break;
+        }
+
+        //check right
+        for (int indX = originTile.getIndX() + KAYAK_WIDTH; indX < Map.X_TILES_COUNT; indX++) {
+            boolean foundObstacle = false;
+            for (int indY = originTile.getIndY(); indY <= KAYAK_HEIGHT; indY++) {
+                if (map.getTileArray()[indX][indY].getStatus() == STATUS_OBSTACLE) {
+                    rockRight = indX - (originTile.getIndX() + KAYAK_WIDTH) + 1;
+                    foundObstacle = true;
+                    break;
+                }
+                if (map.getTileArray()[indX][indY].getStatus() == STATUS_COLLISION) {
+                    rockRight = 0;
+                    foundObstacle = true;
+                    break;
+                }
+            }
+            if (foundObstacle)
+                break;
+        }
+    }
 
     public int distanceToRockAhead() {
         return rockStraight;
@@ -205,3 +252,4 @@ public class Kayak extends Tile {
         this.agent = agent;
     }
 }
+

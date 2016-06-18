@@ -19,4 +19,12 @@ public class Action {
             return "right";
         return "straight";
     }
+
+    public int getMapDirection(){
+        if(direction == LEFT)
+            return -1;
+        if(direction == RIGHT)
+            return 1;
+        return 0;
+    }
 }

@@ -4,6 +4,8 @@ import mlp.HyperbolicTangent;
 import mlp.NeuralNetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -50,13 +52,11 @@ public class Agent {
      * @param learningRate learning rate (alpha) of the neural network
      */
     protected void initNeuralNetwork(double learningRate){
-        int inputLayerSize = Map.X_TILES_COUNT * Map.Y_TILES_COUNT + 1; //board size + action
+        int inputLayerSize = Map.X_TILES_COUNT * Map.Y_TILES_COUNT; //board size
         int hiddenLayerSize = Map.X_TILES_COUNT;
-        int outputLayerSize = 1; // QValue(s,a)
-
+        int outputLayerSize = Action.ACTIONS_NUM; // QValue for each action available for a state
         int[] layers = new int[]{ inputLayerSize, hiddenLayerSize, outputLayerSize};
         NN = new NeuralNetwork(layers, learningRate, new HyperbolicTangent());
-
     }
 
     public void startEpisode(){
@@ -80,14 +80,7 @@ public class Agent {
         }
     }
 
-    protected void act(State state){
-        Action action = getAction(state);
-        if(action != null) {
-            State nextState = doAction(state, action);
-            observeTransition(nextState, action);
-        }
-    }
-    protected Action getAction(State state){ //TODO choose not only randomly
+    public Action chooseAction(State state){ //TODO choose not only randomly
         ArrayList<Action> legalActions = state.getLegalActions();
         Action action;
         //get random numer
@@ -101,33 +94,36 @@ public class Agent {
         return legalActions.get(index);
     }
 
-    protected State doAction(State state, Action action){
-        lastState = state;
-        lastAction = action;
-        kayak.doAction(action);
-        return new State(kayak);
-        //return new State(state, action);
-    }
 
-    protected void observeTransition(State nextState, Action action){
+    protected void observeTransition(State currentState, Action action, State nextState){
+        //lastState = currentState;
+        //lastAction = action;
         int reward = nextState.getReward();
-        episodeRewards += reward;
-        updateNN(nextState, action, reward);
+        episodeRewards += nextState.getReward();
+        learn(currentState, nextState, reward);
     }
 
-    protected void updateNN(State nextState, Action action, int reward){
-        double input[] =lastState.getFeatures(action);
-        double predictionVector[] = NN.getOutput(input);
-        double target = reward + getMaxQValue(nextState);
-        double error = Math.abs(target - predictionVector[0]);
-        NN.backPropagate(input, predictionVector, error); //TODO square error?
+    protected void learn(State currentState, State nextState, int reward){
+        double input[] =currentState.getFeatures(); //including 1 for bias
+        double predictions[] = NN.getOutput(input);
+        double targets[] = NN.getOutput(nextState.getFeatures());
+        ArrayList<Double> targetsList = new ArrayList(Arrays.asList(targets));
+        double maxQValue = Collections.max(targetsList);
+        for (int i = 0; i < targets.length; i++)
+            if (targets[i] == maxQValue)
+                targets[i] = reward + gamma * targets[i];
+            else
+                targets[i] = predictions[i];
+
+        NN.backPropagate(targets, predictions);
     }
-    protected double getMaxQValue(State state){
+
+   /* protected double getMaxQValue(State state){
         double maxQValue = 0;
         //for each legal action, simulate it and calc QValue
         for (Action action : state.getLegalActions()){
-            State nextState = new State(state, action); //simulate performing action
-            double qValue = NN.getOutput(nextState.getFeatures(action))[0];
+            State nextState = StateSimulator.simulateAction(state, action);
+            double qValue = NN.getOutput(nextState.getFeatures())[0];
 
             //==========debugging================
             int index = 0;
@@ -143,5 +139,17 @@ public class Agent {
             }
         }
         return maxQValue;
+    }*/
+
+    public void atTerminalState(State prevState, Action action, State state){
+        observeTransition(prevState, action, state);
+        stopEpisode();
+
+        if(!isInTraining())
+            System.out.println("Finished training");
+    }
+
+    protected boolean isInTraining(){
+        return (episodesSoFar < numTraining);
     }
 }
