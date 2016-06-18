@@ -63,10 +63,12 @@ public class Agent {
         lastAction = null;
         episodeRewards = 0.0f;
         seed = 1;
+
       /*  if(episodesSoFar < 50)
             epsilon = 0.7;
         else
             epsilon = Math.pow(10.0/(episodesSoFar+1), 1);*/
+
     }
 
     public void stopEpisode(){
