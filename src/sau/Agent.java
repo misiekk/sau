@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
-
 /**
  * Created by kasia on 11.06.16.
  */
@@ -52,7 +51,7 @@ public class Agent {
      * @param learningRate learning rate (alpha) of the neural network
      */
     protected void initNeuralNetwork(double learningRate){
-        int inputLayerSize = Map.X_TILES_COUNT * Map.Y_TILES_COUNT; //board size
+        int inputLayerSize = Map.X_TILES_COUNT * Map.Y_TILES_COUNT + 1; //board size
         int hiddenLayerSize = Map.X_TILES_COUNT;
         int outputLayerSize = Action.ACTIONS_NUM; // QValue for each action available for a state
         int[] layers = new int[]{ inputLayerSize, hiddenLayerSize, outputLayerSize};
@@ -64,6 +63,10 @@ public class Agent {
         lastAction = null;
         episodeRewards = 0.0f;
         seed = 1;
+        if(episodesSoFar < 50)
+            epsilon = 0.7;
+        else
+            epsilon = Math.pow(10.0/(episodesSoFar+1), 1);
     }
 
     public void stopEpisode(){
@@ -81,17 +84,17 @@ public class Agent {
     }
 
     public Action chooseAction(State state){ //TODO choose not only randomly
-        ArrayList<Action> legalActions = state.getLegalActions();
-        Action action;
-        //get random numer. if bigger than epsilon
-        //then choose argmax Q(s,a');
-        //action = getBestAction(state);
-
-        //otherwise explore and pick a random action
         Random rand = new Random();
+        double randomValue = rand.nextDouble();
+        if(randomValue <= episodeRewards){
+            //explore and pick a random action - epsilon greedy
+            ArrayList<Action> legalActions = state.getLegalActions();
+            int index = rand.nextInt(legalActions.size());
+            return legalActions.get(index);
+        }
+        else
+            return getBestAction(state);
         //Random rand = new Random(seed++);
-        int index = rand.nextInt(legalActions.size());
-        return legalActions.get(index);
     }
 
 
@@ -107,10 +110,12 @@ public class Agent {
         double input[] =currentState.getFeatures(); //including 1 for bias
         double predictions[] = NN.getOutput(input);
         double targets[] = NN.getOutput(nextState.getFeatures());
-        ArrayList<Double> targetsList = new ArrayList(Arrays.asList(targets));
-        double maxQValue = Collections.max(targetsList);
+        double maxQValue = max(targets);
         for (int i = 0; i < targets.length; i++)
             if (targets[i] == maxQValue)
+                if(reward < 0)
+                    targets[i] = reward;
+                else
                 targets[i] = reward + gamma * targets[i];
             else
                 targets[i] = predictions[i];
@@ -142,8 +147,7 @@ public class Agent {
     }*/
     protected Action getBestAction(State state){
         double[] actionValues = NN.getOutput(state.getFeatures());
-        ArrayList<Double> actionValuesList = new ArrayList(Arrays.asList(actionValues));
-        double maxActionVal = Collections.max(actionValuesList);
+        double maxActionVal = max(actionValues);
         int actionIndex = 0;
         for (int i = 0; i < actionValues.length; i++)
             if(actionValues[i] == maxActionVal)
@@ -162,5 +166,21 @@ public class Agent {
 
     protected boolean isInTraining(){
         return (episodesSoFar < numTraining);
+    }
+
+    protected double max(double[] table){
+        double ret = - 10000;
+        for (int i = 0; i < table.length; i++)
+            if(table[i] > ret)
+                ret = table[i];
+
+        return ret;
+    }
+
+    public void setGamma (double gamma) { this.gamma = gamma; }
+    public void setEpsilon (double epsilon) { this.epsilon = epsilon; }
+    public void setAlpha (double alpha) {
+        this.alpha = alpha;
+        NN.setLearningRate(alpha);
     }
 }

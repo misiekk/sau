@@ -14,10 +14,6 @@ import static sau.Tile.STATUS_KAYAK;
 import static sau.Tile.STATUS_OBSTACLE;
 
 public class Map extends JPanel{
-    static final float ALPHA = 0.2f;
-    static final float GAMMA = 0.9f;
-    static final float EPSILON = 1.0f;
-    static final int NUM_TRAINING = 100;
     static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 20;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
@@ -33,8 +29,8 @@ public class Map extends JPanel{
     private Agent agent;
     private String collisionPlace="";
     private int counter = 0;
-    Map() {
-        agent = new Agent(ALPHA, EPSILON, GAMMA, NUM_TRAINING);
+    Map(Agent agent) {
+        this.agent = agent;
 //        setStartState();
     }
 
@@ -47,6 +43,7 @@ public class Map extends JPanel{
         kayak.setAgent(agent);
        // agent.setKayak(kayak);
         generator = new ObstacleGenerator(this);
+        updateMap();
         repaint();
 
     }
