@@ -219,7 +219,7 @@ public class Map extends JPanel{
         txt = "gamma = " + Double.toString(agent.gamma);
         g.drawString(txt, x + 10, y); y += dy + 10;
 
-        txt = "Features:";
+       /* txt = "Features:";
         g.drawString(txt, x + 10, y); y += dy;
         txt = "f0: distance to left shore = " + Integer.toString(kayak.distanceToLeftShore());
         g.drawString(txt, x + 10, y); y += dy;
@@ -230,7 +230,7 @@ public class Map extends JPanel{
         txt = "f3: distance to right obstacle = " + Integer.toString(kayak.distanceToRockRight());
         g.drawString(txt, x + 10, y); y += dy;
         txt = "f4: distance to obstacle ahead = " + Integer.toString(kayak.distanceToRockAhead());
-        g.drawString(txt, x + 10, y); y += dy + 10;
+        g.drawString(txt, x + 10, y); y += dy + 10;*/
 
       /*  ArrayList<Float> weights = agent.getWeights();
         for (int i = 0; i <weights.size(); i++){
@@ -238,8 +238,8 @@ public class Map extends JPanel{
             g.drawString(txt, x + 10, y); y += dy;
         }*/
 
-        txt = "Last action = " + agent.lastAction.print();
-        g.drawString(txt, x + 10, y+5); y += dy+10;
+        /*txt = "Last action = " + agent.lastAction.print();
+        g.drawString(txt, x + 10, y+5); y += dy+10;*/
         txt = "episodeRewards = " + Float.toString(agent.episodeRewards);
         g.drawString(txt, x + 10, y+5); y += dy+10;
 
