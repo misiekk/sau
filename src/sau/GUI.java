@@ -13,6 +13,7 @@ public class GUI extends javax.swing.JFrame{
     private JButton buttonFaster, buttonSlower;
     private JPanel panelButton;
     private JPanel panelMap;
+    private JTextField alphaTxt, gammaTxt, epsilonTxt;
     private Map map;
     private Agent agent;
     static final float ALPHA = 0.2f;
@@ -23,7 +24,6 @@ public class GUI extends javax.swing.JFrame{
 
     public GUI(){
         super("SAU - RiverKayak");
-
         agent = new Agent(ALPHA, EPSILON, GAMMA, NUM_TRAINING);
         map = new Map(agent);
 
@@ -39,15 +39,14 @@ public class GUI extends javax.swing.JFrame{
         buttonFaster = new JButton("Speed++");
         buttonSlower = new JButton("Speed--");
 
-        final JTextField txtAlpha = new JTextField();
-        final JTextField txtGamma = new JTextField();
-        final JTextField txtEpsilon = new JTextField(Double.toString(agent.epsilon));
-        txtEpsilon.setPreferredSize(new Dimension(50, 15));
+        alphaTxt = new JTextField();
+        gammaTxt = new JTextField();
+        epsilonTxt = new JTextField();
 
         buttonStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                t = map.startSimulation();
+                map.startSimulation();
             }
         });
         buttonStart.setSize(new Dimension(150,50));
@@ -62,24 +61,24 @@ public class GUI extends javax.swing.JFrame{
         buttonAlpha.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                /*double newVal = Double.parseDouble(txtAlpha.getText());
-                agent.setAlpha(newVal);*/
+                double newVal = Double.parseDouble(alphaTxt.getText());
+                agent.setAlpha(newVal);
             }
         });
 
         buttonGamma.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                /*double newVal = Double.parseDouble(txtGamma.getText());
-                agent.setGamma(newVal);*/
+                double newVal = Double.parseDouble(gammaTxt.getText());
+                agent.setGamma(newVal);
             }
         });
 
-        buttonAlpha.addActionListener(new ActionListener() {
+        buttonEpsilon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                /*double newVal = Double.parseDouble(txtEpsilon.getText());
-                agent.setEpsilon(newVal);*/
+                double newVal = Double.parseDouble(epsilonTxt.getText());
+                agent.setEpsilon(newVal);
             }
         });
 
@@ -96,46 +95,63 @@ public class GUI extends javax.swing.JFrame{
                 map.speedDown();
             }
         });
-/*
-        buttonStart.setVisible(true);
-        buttonStop.setVisible(true);
-        buttonStop.updateUI();*/
+
     }
     private void init(){
         prepareButtons();
+
+        GridLayout gridLayout = new GridLayout(4,2);
+        JPanel middlePanel = new JPanel(gridLayout);
+
+        middlePanel.add(buttonStart);
+        middlePanel.add(buttonStop);
+
+        middlePanel.add(alphaTxt);
+        middlePanel.add(buttonAlpha);
+
+        middlePanel.add(gammaTxt);
+        middlePanel.add(buttonGamma);
+
+        middlePanel.add(epsilonTxt);
+        middlePanel.add(buttonEpsilon);
+
+        GridLayout gridLayout2 = new GridLayout(2,1);
+        JPanel rightPanel = new JPanel(gridLayout2);
+
+        rightPanel.add(buttonFaster);
+        rightPanel.add(buttonSlower);
+        buttonFaster.setSize(new Dimension(50,50));
+        //middlePanel.add(buttonSlower);
+
+        //GridLayout gridLayout = new GridLayout(2,1);
+        //setLayout(gridLayout);
+        //panelButton = new JPanel();
+        //panelButton.setLayout(new BoxLayout(panelButton, BoxLayout.X_AXIS));
+        //panelButton.add(map);
+        //panelButton.add(buttonSlower);
+        //panelButton.add(buttonEpsilon);
+/*
         mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+        mainPanel.add(buttonStart);
+        mainPanel.add(buttonStop);
+        mainPanel.add(buttonFaster);*/
+//        setContentPane(this.mainPanel);
+        //map.setVisible(true);
+        //this.add(map);
+        //this.add(mainPanel);
+        this.add(map, BorderLayout.CENTER);
+        this.add(rightPanel, BorderLayout.EAST);
+        this.add(middlePanel, BorderLayout.SOUTH);
 
-        panelMap = new JPanel();
-        panelMap.setLayout(new BoxLayout(panelMap, BoxLayout.Y_AXIS));
 
-        panelButton = new JPanel();
-
-        panelButton.setLayout(new BoxLayout(panelButton, BoxLayout.LINE_AXIS));
-        panelButton.add(buttonStart);
-        panelButton.add(buttonStop);
-        panelButton.add(buttonFaster);
-        panelButton.add(buttonSlower);
-        panelButton.add(buttonEpsilon);
-
-        panelMap.add(map);
-
-        mainPanel.add(panelMap);
-        mainPanel.add(panelButton);
-
-        setContentPane(this.mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(Map.X_TILES_COUNT*Map.TILE_SIZE +2*Map.Y_TILES_COUNT + 300, Map.Y_TILES_COUNT *Map.TILE_SIZE +2*Map.X_TILES_COUNT + 100));
+        setPreferredSize(new Dimension((int)3.8*Map.X_TILES_COUNT * Map.TILE_SIZE,
+                //+3*Map.Y_TILES_COUNT + 300,
+                (int)2*Map.Y_TILES_COUNT * Map.TILE_SIZE));
+                        //+3*Map.X_TILES_COUNT + 100));
+
         pack();
-
-/*        startSimulationButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showConfirmDialog(GUI.this, "Clicked!");
-            }
-        });*/
         setVisible(true);
-
-
     }
 }

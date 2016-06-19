@@ -9,7 +9,13 @@ public class MainWindow {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                GUI mainGUI = new GUI();
+                /*JFrame frame = new JFrame("SAU");
+                frame.setContentPane(new NewGUI().mainPanel);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setVisible(true);*/
+                new GUI();
+
             }
         });
 

@@ -94,12 +94,12 @@ public class Map extends JPanel{
         });
     }
 
-    public Thread startSimulation() {
+    public void startSimulation() {
         Thread t = new Thread(new Runnable() {
             int counter = 0;
             @Override
             public void run() {
-                while (counter < 10){
+                while (true){
                     while(!timer.isRunning()){
                         if(isCollision) {
                             counter++;
@@ -114,7 +114,7 @@ public class Map extends JPanel{
             }
         });
         t.start();
-        return t;
+        //return t;
 
     }
 
@@ -208,22 +208,26 @@ public class Map extends JPanel{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        for(int i=0; i<X_TILES_COUNT; ++i) {
-            for (int j = 0; j < Y_TILES_COUNT; ++j) {
-                g.drawRect(this.tileArray[i][j].getX(), this.tileArray[i][j].getY(), TILE_SIZE, TILE_SIZE);
+        if(tileArray != null) {
+            for (int i = 0; i < X_TILES_COUNT; ++i) {
+                for (int j = 0; j < Y_TILES_COUNT; ++j) {
+                    g.drawRect(this.tileArray[i][j].getX(), this.tileArray[i][j].getY(), TILE_SIZE, TILE_SIZE);
+                }
             }
-        }
+
 
         paintObstacles(g);
+
         g.setColor(Color.BLACK);
-        for(int i=0; i<X_TILES_COUNT; ++i) {
+
+        for (int i = 0; i < X_TILES_COUNT; ++i) {
             for (int j = 0; j < Y_TILES_COUNT; ++j) {
                 Tile tile = tileArray[i][j];
-                g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY()+TILE_SIZE);
+                g.drawString(Integer.toString(tile.getStatus()), tile.getX(), tile.getY() + TILE_SIZE);
             }
         }
         paintKayak(g);
+
 
         //info printing
         int x = X_TILES_COUNT * TILE_SIZE + 10;
@@ -232,7 +236,7 @@ public class Map extends JPanel{
         int y = 30; int dy = 15;
         String txt = "Params:";
         g.drawString(txt, x + 10, y); y += dy;
-        txt = "aplha = " + Double.toString(agent.alpha);
+        txt = "alpha = " + Double.toString(agent.alpha);
         g.drawString(txt, x + 10, y); y += dy;
         txt = "epsilon = " + Double.toString(agent.epsilon);
         g.drawString(txt, x + 10, y); y += dy;
@@ -274,7 +278,7 @@ public class Map extends JPanel{
                 Integer.toString(kayak.getTiles().get(0).getIndY()) + ")";
         g.drawString(txt, x + 10, y); y += dy;
         g.drawString(Integer.toString(counter) + ", " + collisionPlace, x + 10, y); y += dy;
-
+        }
     }
 
     /* For debugging purposes */
