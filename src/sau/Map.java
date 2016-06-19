@@ -1,5 +1,7 @@
 package sau;
 
+import sun.awt.windows.ThemeReader;
+
 import javax.swing.*;
 import javax.swing.text.Document;
 import java.awt.*;
@@ -29,9 +31,11 @@ public class Map extends JPanel{
     private Agent agent;
     private String collisionPlace="";
     private int counter = 0;
+    private boolean isCollision = true;
     Map(Agent agent) {
         this.agent = agent;
 //        setStartState();
+        prepareTimer();
     }
 
     private void setStartState(){
@@ -47,22 +51,12 @@ public class Map extends JPanel{
         repaint();
 
     }
-    public void startSimulation(){
-        setStartState();
-        kayak.getAgent().startEpisode();
+
+
+    private void prepareTimer() {
         this.timer = new Timer(TIMER_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-               /* if(direction){          // Wahadelko
-                    if(!kayak.moveRight()){
-                        direction = false;
-                    }
-                }
-                else{
-                    if(!kayak.moveLeft()){
-                        direction = true;
-                    }
-                }*/
                 State currentState = new State(Tile.getStatusBoard(tileArray));
                 Action action = agent.chooseAction(currentState);
                 kayak.doAction(action);
@@ -72,35 +66,54 @@ public class Map extends JPanel{
 
                 //reinforcement learning:
                 State nextState = new State(Tile.getStatusBoard(tileArray));
-                if(collisionOccurred()){
+                if (collisionOccurred()) {
 //                    counter++;
 //                    updateMap();
                     agent.atTerminalState(currentState, action, nextState);
                     stopSimulation();
-                }
-                else
+                    isCollision = true;
+                } else
                     agent.observeTransition(currentState, action, nextState);
 
                 //            else
-  //                  agent.act(currentState);
-      //          updateMap();
-
-
+                //                  agent.act(currentState);
+                //          updateMap();
             }
 
         });
-        //timer.setRepeats(false);
-        timer.start();
-
-        System.out.println("Timer started!");
-        //Scanner scan = new Scanner(System.in);
-        //int debug = scan.nextInt();
     }
+
+    public void startSimulation() {
+
+        Thread t = new Thread(new Runnable() {
+            int counter = 0;
+            @Override
+            public void run() {
+                while (counter < 10){
+                    while(!timer.isRunning()){
+                        if(isCollision) {
+                            counter++;
+                            setStartState();
+                            kayak.getAgent().startEpisode();
+                            timer.start();
+                            isCollision = false;
+                            //Scanner scan = new Scanner(System.in);
+                        }
+                    }
+                }
+            }
+        });
+        t.start();
+
+
+    }
+
 
     public void stopSimulation(){
         if(timer != null)
             this.timer.stop();
-        this.timer = null;
+
+        //this.timer = null;
 
     }
     /* Returns true if kayak hit the obstacle */
