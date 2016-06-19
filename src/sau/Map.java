@@ -19,7 +19,7 @@ public class Map extends JPanel{
     static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 20;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
-    static final private int TIMER_DELAY = 100;  // timer delay to set in ms
+    private int speed = 100;  // timer delay to set in ms
 
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
@@ -52,9 +52,20 @@ public class Map extends JPanel{
 
     }
 
+    public void speedDown(){
+        speed += 10;
+        this.timer.setDelay(speed);
+    }
+
+    public void speedUp(){
+        if(speed > 10){
+            speed -= 10;
+            this.timer.setDelay(speed);
+        }
+    }
 
     private void prepareTimer() {
-        this.timer = new Timer(TIMER_DELAY, new ActionListener() {
+        this.timer = new Timer(speed, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 State currentState = new State(Tile.getStatusBoard(tileArray));
@@ -83,8 +94,7 @@ public class Map extends JPanel{
         });
     }
 
-    public void startSimulation() {
-
+    public Thread startSimulation() {
         Thread t = new Thread(new Runnable() {
             int counter = 0;
             @Override
@@ -104,7 +114,7 @@ public class Map extends JPanel{
             }
         });
         t.start();
-
+        return t;
 
     }
 
