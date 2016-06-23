@@ -8,18 +8,18 @@ import java.awt.event.ActionListener;
 public class GUI extends javax.swing.JFrame{
     //private JButton startSimulationButton;
     private JPanel mainPanel;
-    private JButton buttonStart, buttonStop;
+    private JButton buttonStart, buttonStop, buttonSkipSteps;
     private JButton buttonAlpha, buttonGamma, buttonEpsilon;
     private JButton buttonFaster, buttonSlower;
     private JPanel panelButton;
     private JPanel panelMap;
-    private JTextField alphaTxt, gammaTxt, epsilonTxt;
+    private JTextField alphaTxt, gammaTxt, epsilonTxt, skipTxt;
     private Map map;
     private Agent agent;
     static final float ALPHA = 0.2f;
     static final float GAMMA = 0.9f;
     static final float EPSILON = 0.3f;
-    static final int NUM_TRAINING = 100;
+    static final int NUM_TRAINING = 10000;
     private Thread t = null;
 
     public GUI(){
@@ -38,10 +38,11 @@ public class GUI extends javax.swing.JFrame{
         buttonEpsilon = new JButton("Set epsilon");
         buttonFaster = new JButton("Speed++");
         buttonSlower = new JButton("Speed--");
-
+        buttonSkipSteps = new JButton("Skip n episodes");
         alphaTxt = new JTextField();
         gammaTxt = new JTextField();
         epsilonTxt = new JTextField();
+        skipTxt = new JTextField();
 
         buttonStart.addActionListener(new ActionListener() {
             @Override
@@ -96,11 +97,19 @@ public class GUI extends javax.swing.JFrame{
             }
         });
 
+        buttonSkipSteps.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int steps = Integer.parseInt(skipTxt.getText());
+                map.skipSteps(steps);
+            }
+        });
+
     }
     private void init(){
         prepareButtons();
 
-        GridLayout gridLayout = new GridLayout(4,2);
+        GridLayout gridLayout = new GridLayout(5,2);
         JPanel middlePanel = new JPanel(gridLayout);
 
         middlePanel.add(buttonStart);
@@ -114,6 +123,9 @@ public class GUI extends javax.swing.JFrame{
 
         middlePanel.add(epsilonTxt);
         middlePanel.add(buttonEpsilon);
+
+        middlePanel.add(skipTxt);
+        middlePanel.add(buttonSkipSteps);
 
         GridLayout gridLayout2 = new GridLayout(2,1);
         JPanel rightPanel = new JPanel(gridLayout2);

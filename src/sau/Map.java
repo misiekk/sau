@@ -21,6 +21,7 @@ public class Map extends JPanel{
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
     private int speed = 100;  // timer delay to set in ms
 
+    private Thread simThread = null;
     private Timer timer;        // for updating GUI
    // private ArrayList<Tile> tileList;
     private Tile[][] tileArray; // 2D-array of tiles to quick access by index
@@ -64,6 +65,38 @@ public class Map extends JPanel{
         }
     }
 
+    public void skipSteps(int steps) {
+        //this.timer.stop();
+        this.simThread.interrupt();
+        System.out.println(simThread.isAlive());
+        int i=0;
+        while(i<steps){
+            System.out.println(i);
+            State currentState = new State(Tile.getStatusBoard(tileArray));
+            Action action = agent.chooseAction(currentState);
+            kayak.doAction(action);
+            generator.update();
+            updateMap();
+            //repaint();
+
+            //reinforcement learning:
+            State nextState = new State(Tile.getStatusBoard(tileArray));
+            if (collisionOccurred()) {
+                agent.atTerminalState(currentState, action, nextState);
+                //stopSimulation();
+                isCollision = true;
+                i++;
+            }
+            else
+                agent.observeTransition(currentState, action, nextState);
+        }
+        System.out.println(simThread.isAlive());
+        System.out.println("Starting timer");
+        timer.start();
+        //this.simThread.start();
+    }
+
+
     private void prepareTimer() {
         this.timer = new Timer(speed, new ActionListener() {
             @Override
@@ -90,19 +123,16 @@ public class Map extends JPanel{
                 //                  agent.act(currentState);
                 //          updateMap();
             }
-
         });
     }
 
     public void startSimulation() {
-        Thread t = new Thread(new Runnable() {
-            int counter = 0;
+        simThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (true && !simThread.isInterrupted()){
                     while(!timer.isRunning()){
                         if(isCollision) {
-                            counter++;
                             setStartState();
                             kayak.getAgent().startEpisode();
                             timer.start();
@@ -113,7 +143,7 @@ public class Map extends JPanel{
                 }
             }
         });
-        t.start();
+        simThread.start();
         //return t;
 
     }
@@ -122,7 +152,7 @@ public class Map extends JPanel{
     public void stopSimulation(){
         if(timer != null)
             this.timer.stop();
-
+        //this.simThread.interrupt();
         //this.timer = null;
 
     }

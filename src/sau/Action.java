@@ -4,9 +4,9 @@ package sau;
  * Created by kasia on 11.06.16.
  */
 public class Action {
-    public static final Integer LEFT = 0;
-    public static final Integer RIGHT = 1;
-    public static final Integer STRAIGHT = 2;
+    public static final int LEFT = 0;
+    public static final int RIGHT = 1;
+    public static final int STRAIGHT = 2;
     public static final int ACTIONS_NUM = 3;
     public Integer direction;
     public Action(Integer direction){

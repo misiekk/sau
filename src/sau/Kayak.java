@@ -167,10 +167,21 @@ public class Kayak extends Tile {
     }
 
     public void doAction(Action action) {
+        switch(action.direction){
+            case Action.LEFT:
+                moveLeft();
+                break;
+            case Action.RIGHT:
+                moveRight();
+                break;
+            default:
+                break;
+        }
+        /*
         if (action.direction == Action.LEFT)
             moveLeft();
         else if (action.direction == Action.RIGHT)
-            moveRight();
+            moveRight();*/
     }
 
     public int distanceToRightShore() {

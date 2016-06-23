@@ -109,16 +109,17 @@ public class Agent {
     }
 
     protected void learn(State currentState, State nextState, int reward){
-        double input[] =currentState.getFeatures(); //including 1 for bias
+        double input[] = currentState.getFeatures(); //including 1 for bias
         double predictions[] = NN.getOutput(input);
         double targets[] = NN.getOutput(nextState.getFeatures());
         double maxQValue = max(targets);
         for (int i = 0; i < targets.length; i++)
-            if (targets[i] == maxQValue)
-                if(reward < 0)
+            if (targets[i] == maxQValue) {
+                if (reward < 0)
                     targets[i] = reward;
                 else
-                targets[i] = reward + gamma * targets[i];
+                    targets[i] = reward + gamma * targets[i];
+            }
             else
                 targets[i] = predictions[i];
 

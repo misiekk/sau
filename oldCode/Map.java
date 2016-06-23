@@ -16,7 +16,7 @@ public class Map extends JPanel{
     static final float ALPHA = 0.2f;
     static final float GAMMA = 0.9f;
     static final float EPSILON = 1.0f;
-    static final int NUM_TRAINING = 100;
+    static final int NUM_TRAINING = 10000;
     static final public int X_TILES_COUNT = 10;
     static final public int Y_TILES_COUNT = 20;
     static final public int TILE_SIZE = 20;  // tile = TILE_SIZE x TILE_SIZE px
